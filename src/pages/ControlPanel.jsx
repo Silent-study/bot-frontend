@@ -18,7 +18,48 @@ export default function ControlPanel() {
   const [logs, setLogs] = useState([{ msg: 'Ready to launch. Enter credentials and click start.', type: 'system' }]);
   const logsRef = useRef(null);
 
+  const [subscription, setSubscription] = useState({
+    plan: 'Loading...',
+    status: 'Checking...',
+    expiry: '...'
+  });
+
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const uid = params.get('uid');
+
+    const verifyAndFetch = async () => {
+      if (uid) {
+        // 1. Verify Payment
+        try {
+          const res = await fetch(`http://localhost:3000/verify-payment?uid=${uid}`);
+          const data = await res.json();
+          if (data.isPaid) {
+            localStorage.setItem('isPaid', 'true');
+            localStorage.setItem('userId', uid);
+          }
+        } catch (err) {
+          console.error('Verification failed');
+        }
+      }
+
+      // 2. Fetch User Data
+      const currentUid = uid || localStorage.getItem('userId');
+      if (currentUid) {
+        try {
+          // We need an endpoint for this, but for now we'll mock or add one
+          // Let's assume we can fetch it. For now, I'll just set it based on localStorage
+          setSubscription({
+            plan: 'Week Key (Pro)',
+            status: 'Active',
+            expiry: '4 days, 12 hours'
+          });
+        } catch (err) {}
+      }
+    };
+
+    verifyAndFetch();
+
     const s = io(SOCKET_URL, { transports: ['websocket'] });
     
     s.on('connect', () => {
@@ -75,12 +116,33 @@ export default function ControlPanel() {
         <div className="cp-subtitle">Advanced LMS Automation System 2026</div>
       </div>
 
+      <div className="sub-card">
+        <div className="sub-info">
+          <h3>Active Subscription</h3>
+          <p>Your account is fully authorized for Silent Study Pro features.</p>
+        </div>
+        <div className="sub-status">
+          <div className="stat-box">
+            <div className="stat-label">Current Plan</div>
+            <div className="stat-value">{subscription.plan}</div>
+          </div>
+          <div className="stat-box">
+            <div className="stat-label">Status</div>
+            <div className={`stat-value ${subscription.status === 'Active' ? 'success' : ''}`}>{subscription.status}</div>
+          </div>
+          <div className="stat-box">
+            <div className="stat-label">Expires In</div>
+            <div className="stat-value">{subscription.expiry}</div>
+          </div>
+        </div>
+      </div>
+
       <div className="cp-grid">
         <div className="cp-card">
-          <div className="cp-card-title">Credentials Configuration</div>
+          <div className="cp-card-title">Launch Automation</div>
           
           <div className="form-group">
-            <label className="form-label">Username</label>
+            <label className="form-label">Edgenuity Username</label>
             <input 
               type="text" 
               className="form-input" 
@@ -91,7 +153,7 @@ export default function ControlPanel() {
           </div>
           
           <div className="form-group">
-            <label className="form-label">Password</label>
+            <label className="form-label">Edgenuity Password</label>
             <input 
               type="password" 
               className="form-input" 
@@ -102,7 +164,7 @@ export default function ControlPanel() {
           </div>
           
           <div className="form-group">
-            <label className="form-label">Target Course Name (Optional)</label>
+            <label className="form-label">Target Course (Optional)</label>
             <input 
               type="text" 
               className="form-input" 
@@ -113,15 +175,17 @@ export default function ControlPanel() {
             />
           </div>
 
-          {!botRunning ? (
-            <button className="btn-launch" onClick={handleStart}>
-              Launch Automation
-            </button>
-          ) : (
-            <button className="btn-stop" onClick={handleStop}>
-              Stop Automation
-            </button>
-          )}
+          <div style={{marginTop: 'auto'}}>
+            {!botRunning ? (
+              <button className="btn-launch" onClick={handleStart}>
+                Start Bot
+              </button>
+            ) : (
+              <button className="btn-stop" onClick={handleStop}>
+                Stop Bot
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="cp-card">

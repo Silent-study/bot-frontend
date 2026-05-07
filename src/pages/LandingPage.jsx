@@ -13,26 +13,20 @@ export default function LandingPage() {
     return (basePrice + extra).toFixed(2);
   };
 
-  const handlePurchase = async (planId) => {
-    try {
-      const addons = [];
-      if (selectedAddon === 'service' || selectedAddon === 'both') addons.push('service');
-      if (selectedAddon === 'proctor' || selectedAddon === 'both') addons.push('proctor');
-
-      const response = await fetch('http://localhost:3000/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId, addons })
-      });
-
-      const session = await response.json();
-      if (session.url) {
-        window.location.href = session.url;
-      }
-    } catch (err) {
-      console.error('Purchase error:', err);
-      alert('Payment failed to initialize. Make sure the backend is running and Stripe keys are set.');
+  const scrollToPricing = (e) => {
+    if (e) e.preventDefault();
+    const pricing = document.getElementById('pricing');
+    if (pricing) {
+      pricing.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const handleCheckout = (planId) => {
+    const addons = [];
+    if (selectedAddon === 'service' || selectedAddon === 'both') addons.push('service');
+    if (selectedAddon === 'proctor' || selectedAddon === 'both') addons.push('proctor');
+    
+    navigate('/register', { state: { planId, addons } });
   };
 
   const scrollCarousel = (dir) => {
@@ -190,7 +184,7 @@ export default function LandingPage() {
           <a href="#pricing" className="nav-link">Pricing</a>
           <a href="#tutorial" className="nav-link">Tutorial</a>
           <a href="#support" className="nav-link">Support</a>
-          <button className="nav-btn-primary" onClick={() => navigate('/dashboard')}>Get Started</button>
+          <button className="nav-btn-primary" onClick={scrollToPricing}>Get Started</button>
         </div>
       </nav>
 
@@ -231,7 +225,7 @@ export default function LandingPage() {
             
             <div className="hero-actions">
               <button className="btn-outline">Explore Features</button>
-              <button className="nav-btn-primary" onClick={() => navigate('/dashboard')} style={{padding: '0.8rem 2rem', fontSize: '1.05rem'}}>Get Started</button>
+              <button className="nav-btn-primary" onClick={scrollToPricing} style={{padding: '0.8rem 2rem', fontSize: '1.05rem'}}>Get Started</button>
             </div>
             
             <div className="hero-stats">
@@ -656,7 +650,7 @@ export default function LandingPage() {
               <div className="p-label">Day Key</div>
               <div className="p-price"><span>$</span>{calculatePrice(2.50)}</div>
               <div className="p-duration">24 hours · 1 user</div>
-              <button className="p-btn" onClick={() => handlePurchase('day')}>Get Started →</button>
+              <button className="p-btn" onClick={() => handleCheckout('day')}>Checkout →</button>
             </div>
 
             <div className="p-card popular">
@@ -664,21 +658,21 @@ export default function LandingPage() {
               <div className="p-label">Week Key</div>
               <div className="p-price"><span>$</span>{calculatePrice(10)}</div>
               <div className="p-duration">1 week · 1 user</div>
-              <button className="p-btn primary" onClick={() => handlePurchase('week')}>Get Started →</button>
+              <button className="p-btn primary" onClick={() => handleCheckout('week')}>Checkout →</button>
             </div>
 
             <div className="p-card">
               <div className="p-label">Month Key</div>
               <div className="p-price"><span>$</span>{calculatePrice(20)}</div>
               <div className="p-duration">1 month · 1 user</div>
-              <button className="p-btn" onClick={() => handlePurchase('month')}>Get Started →</button>
+              <button className="p-btn" onClick={() => handleCheckout('month')}>Checkout →</button>
             </div>
 
             <div className="p-card">
               <div className="p-label">6 Months Key</div>
               <div className="p-price"><span>$</span>{calculatePrice(40)}</div>
               <div className="p-duration">6 months · 1 user</div>
-              <button className="p-btn" onClick={() => handlePurchase('six_month')}>Get Started →</button>
+              <button className="p-btn" onClick={() => handleCheckout('six_month')}>Checkout →</button>
             </div>
           </div>
 
@@ -758,7 +752,7 @@ export default function LandingPage() {
             <div className="footer-label">QUICK LINKS</div>
             <div className="footer-links-grid">
               <a href="#support">Support ›</a>
-              <a href="#get-started" onClick={(e) => { e.preventDefault(); navigate('/dashboard'); }}>Get Started ›</a>
+              <a href="#get-started" onClick={scrollToPricing}>Get Started ›</a>
               <a href="#features">Features ›</a>
               <a href="#tutorial">Tutorial ›</a>
               <a href="https://discord.gg/silentstudy" target="_blank" rel="noreferrer">Discord Community ›</a>
