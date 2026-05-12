@@ -107,106 +107,122 @@ export default function ControlPanel() {
     setCurrentState('STOPPED');
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('isPaid');
+    localStorage.removeItem('userId');
+    navigate('/');
+    window.location.reload();
+  };
+
   return (
-    <div className="control-panel-container">
-      <div className="cp-header">
-        <div className="cp-logo">
-          <span style={{cursor: 'pointer', marginRight: '10px'}} onClick={() => navigate('/')}>←</span> Silent<span>Study</span>
+    <div className="dashboard-wrapper">
+      <aside className="sidebar">
+        <div className="sidebar-logo">
+          SILENT<span>STUDY</span>
         </div>
-        <div className="cp-subtitle">Advanced LMS Automation System 2026</div>
-      </div>
-
-      <div className="sub-card">
-        <div className="sub-info">
-          <h3>Active Subscription</h3>
-          <p>Your account is fully authorized for Silent Study Pro features.</p>
+        <nav className="sidebar-nav">
+          <div className="nav-item active">Dashboard</div>
+          <div className="nav-item">Automation Logs</div>
+          <div className="nav-item">Settings</div>
+        </nav>
+        <div className="sidebar-footer">
+          <button className="logout-btn" onClick={handleLogout}>
+            Logout
+          </button>
         </div>
-        <div className="sub-status">
-          <div className="stat-box">
-            <div className="stat-label">Current Plan</div>
-            <div className="stat-value">{subscription.plan}</div>
-          </div>
-          <div className="stat-box">
-            <div className="stat-label">Status</div>
-            <div className={`stat-value ${subscription.status === 'Active' ? 'success' : ''}`}>{subscription.status}</div>
-          </div>
-          <div className="stat-box">
-            <div className="stat-label">Expires In</div>
-            <div className="stat-value">{subscription.expiry}</div>
-          </div>
-        </div>
-      </div>
+      </aside>
 
-      <div className="cp-grid">
-        <div className="cp-card">
-          <div className="cp-card-title">Launch Automation</div>
-          
-          <div className="form-group">
-            <label className="form-label">Edgenuity Username</label>
-            <input 
-              type="text" 
-              className="form-input" 
-              value={creds.username}
-              onChange={e => setCreds({...creds, username: e.target.value})}
-              disabled={botRunning}
-            />
+      <main className="main-content">
+        <header className="dashboard-header">
+          <div className="header-title">Automation Dashboard</div>
+          <div className="user-profile">
+            <div className="user-badge">{localStorage.getItem('userId')?.substring(0, 8) || 'User'}</div>
           </div>
-          
-          <div className="form-group">
-            <label className="form-label">Edgenuity Password</label>
-            <input 
-              type="password" 
-              className="form-input" 
-              value={creds.password}
-              onChange={e => setCreds({...creds, password: e.target.value})}
-              disabled={botRunning}
-            />
-          </div>
-          
-          <div className="form-group">
-            <label className="form-label">Target Course (Optional)</label>
-            <input 
-              type="text" 
-              className="form-input" 
-              placeholder="e.g. English 10"
-              value={creds.courseName}
-              onChange={e => setCreds({...creds, courseName: e.target.value})}
-              disabled={botRunning}
-            />
-          </div>
+        </header>
 
-          <div style={{marginTop: 'auto'}}>
-            {!botRunning ? (
-              <button className="btn-launch" onClick={handleStart}>
-                Start Bot
-              </button>
-            ) : (
-              <button className="btn-stop" onClick={handleStop}>
-                Stop Bot
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="cp-card">
-          <div className="cp-card-title">
-            Live Activity Logs
-            <div className={`status-badge ${botRunning ? 'RUNNING' : ''}`}>{currentState}</div>
-          </div>
-          
-          <div className="logs-window" ref={logsRef}>
-            {logs.map((log, i) => (
-              <div key={i} className={`log-entry ${log.type}`}>
-                {log.msg}
+        <div className="dashboard-scrollable">
+          <div className="sub-card">
+            <div className="sub-info">
+              <h3>Active Subscription</h3>
+              <p>Your account is fully authorized for Silent Study Pro features.</p>
+            </div>
+            <div className="sub-status">
+              <div className="stat-box">
+                <div className="stat-label">Current Plan</div>
+                <div className="stat-value">{subscription.plan}</div>
               </div>
-            ))}
+              <div className="stat-box">
+                <div className="stat-label">Status</div>
+                <div className={`stat-value ${subscription.status === 'Active' ? 'success' : ''}`}>{subscription.status}</div>
+              </div>
+              <div className="stat-box">
+                <div className="stat-label">Expires In</div>
+                <div className="stat-value">{subscription.expiry}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="cp-grid">
+            <div className="cp-card">
+              <div className="cp-card-title">Launch Automation</div>
+              <div className="form-group">
+                <label className="form-label">Edgenuity Username</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  placeholder="Username" 
+                  value={creds.username} 
+                  onChange={e => setCreds({...creds, username: e.target.value})} 
+                  disabled={botRunning}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Edgenuity Password</label>
+                <input 
+                  type="password" 
+                  className="form-input" 
+                  placeholder="Password" 
+                  value={creds.password} 
+                  onChange={e => setCreds({...creds, password: e.target.value})} 
+                  disabled={botRunning}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Target Course (Optional)</label>
+                <input 
+                  type="text" 
+                  className="form-input" 
+                  placeholder="e.g. English 10" 
+                  value={creds.courseName} 
+                  onChange={e => setCreds({...creds, courseName: e.target.value})} 
+                  disabled={botRunning}
+                />
+              </div>
+
+              {botRunning ? (
+                <button className="btn-stop" onClick={handleStop}>Stop Automation</button>
+              ) : (
+                <button className="btn-launch" onClick={handleStart}>Start Bot</button>
+              )}
+            </div>
+
+            <div className="cp-card">
+              <div className="cp-card-title">
+                Live Activity Logs
+                <div className={`status-badge ${botRunning ? 'RUNNING' : ''}`}>{currentState}</div>
+              </div>
+              <div className="logs-window" ref={logsRef}>
+                {logs.length === 0 && <div className="log-entry info">Ready to launch. Enter credentials and click start.</div>}
+                {logs.map((log, i) => (
+                  <div key={i} className={`log-entry ${log.type}`}>
+                    {log.msg}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-
-      <footer className="footer" style={{ borderTop: 'none', paddingBottom: '1rem', marginTop: 'auto' }}>
-        <p>© 2026 Silent Study Automation Labs. All rights reserved.</p>
-      </footer>
+      </main>
     </div>
   );
 }
