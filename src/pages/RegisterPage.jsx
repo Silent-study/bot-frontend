@@ -1,10 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../ControlPanel.css';
 
 export default function RegisterPage() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (localStorage.getItem('isPaid') === 'true') {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
   const { planId, addons } = location.state || { planId: 'week', addons: [] };
 
   const [formData, setFormData] = useState({

@@ -10,9 +10,11 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Check if user is already "paid" or "authenticated" via localStorage for demo
     const paid = localStorage.getItem('isPaid');
-    if (paid === 'true') {
+    const params = new URLSearchParams(window.location.search);
+    const uid = params.get('uid');
+
+    if (paid === 'true' || uid) {
       setIsAuthenticated(true);
     }
   }, []);
@@ -24,7 +26,7 @@ export default function App() {
         <Route path="/register" element={<RegisterPage onAuthSuccess={() => setIsAuthenticated(true)} />} />
         <Route 
           path="/dashboard" 
-          element={isAuthenticated ? <ControlPanel /> : <Navigate to="/register" />} 
+          element={(isAuthenticated || new URLSearchParams(window.location.search).get('uid')) ? <ControlPanel /> : <Navigate to="/register" />} 
         />
       </Routes>
     </Router>
