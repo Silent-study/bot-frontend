@@ -5,6 +5,13 @@ export default function LandingPage() {
   const navigate = useNavigate();
   const carouselRef = useRef(null);
   const [selectedAddon, setSelectedAddon] = useState('base'); // 'base', 'service', 'proctor', 'both'
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem('isPaid') === 'true' || localStorage.getItem('userId')) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   const calculatePrice = (basePrice) => {
     let extra = 0;
@@ -184,7 +191,9 @@ export default function LandingPage() {
           <a href="#pricing" className="nav-link">Pricing</a>
           <a href="#tutorial" className="nav-link">Tutorial</a>
           <a href="#support" className="nav-link">Support</a>
-          <button className="nav-btn-primary" onClick={scrollToPricing}>Get Started</button>
+          <button className="nav-btn-primary" onClick={isLoggedIn ? () => navigate('/dashboard') : scrollToPricing}>
+            {isLoggedIn ? 'Go to Dashboard' : 'Get Started'}
+          </button>
         </div>
       </nav>
 
@@ -225,7 +234,9 @@ export default function LandingPage() {
             
             <div className="hero-actions">
               <button className="btn-outline">Explore Features</button>
-              <button className="nav-btn-primary" onClick={scrollToPricing} style={{padding: '0.8rem 2rem', fontSize: '1.05rem'}}>Get Started</button>
+              <button className="nav-btn-primary" onClick={isLoggedIn ? () => navigate('/dashboard') : scrollToPricing} style={{padding: '0.8rem 2rem', fontSize: '1.05rem'}}>
+                {isLoggedIn ? 'Go to Dashboard' : 'Get Started'}
+              </button>
             </div>
             
             <div className="hero-stats">
