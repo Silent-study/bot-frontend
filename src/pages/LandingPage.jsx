@@ -73,7 +73,7 @@ export default function LandingPage() {
   const features = [
     {
       title: "Auto Submit",
-      desc: "Automatically submits assignments without any input. Set a min and max delay per activity type — Silent Study picks a random time in between.",
+      desc: "Automatically submits assignments without any input. Set a min and max delay per activity type - Silent Study picks a random time in between.",
       icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>,
       color: "blue"
     },
@@ -91,7 +91,7 @@ export default function LandingPage() {
     },
     {
       title: "Censor Private Info",
-      desc: "Blurs your name, school, class, and other sensitive info on screen — useful when screensharing or taking screenshots to send to others.",
+      desc: "Blurs your name, school, class, and other sensitive info on screen - useful when screensharing or taking screenshots to send to others.",
       icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>,
       color: "yellow"
     },
@@ -121,7 +121,7 @@ export default function LandingPage() {
     },
     {
       title: "Config System",
-      desc: "Save all your settings as a shareable preset. Import recommended configs from others or export your own — no manual re-setup needed.",
+      desc: "Save all your settings as a shareable preset. Import recommended configs from others or export your own - no manual re-setup needed.",
       icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>,
       color: "orange"
     },
@@ -169,7 +169,7 @@ export default function LandingPage() {
     },
     {
       title: "Mobile Dashboard",
-      desc: "Monitor live scores and session status from your phone. Send pause/resume commands remotely — fully end-to-end encrypted.",
+      desc: "Monitor live scores and session status from your phone. Send pause/resume commands remotely - fully end-to-end encrypted.",
       icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>,
       color: "purple"
     }
@@ -225,7 +225,7 @@ export default function LandingPage() {
             </h1>
             
             <p className="hero-subtitle">
-              The Edgenuity AI bot that finishes your classes — instant answers, video<br/>
+              The Edgenuity AI bot that finishes your classes - instant answers, video<br/>
               skipping, and EdgeEX support.
             </p>
             <p className="hero-subtitle-small">
@@ -256,7 +256,7 @@ export default function LandingPage() {
           <div style={{textAlign: "center", marginBottom: "4rem"}}>
             <h2 style={{fontSize: "2.5rem", fontWeight: 800, marginBottom: "1rem"}}>Built for Every Student</h2>
             <p style={{color: "var(--text-secondary)", fontSize: "1.1rem"}}>
-              Whether you need to pass a class, boost your GPA, or just finish faster — SilentStudy has every feature to get it done.
+              Whether you need to pass a class, boost your GPA, or just finish faster - SilentStudy has every feature to get it done.
             </p>
           </div>
           
@@ -289,10 +289,10 @@ export default function LandingPage() {
               Perfect Scores, <span className="text-blue-gradient">Every Time</span>
             </h2>
             <p className="split-desc">
-              Instant Edgenuity answers on every quiz and test — powered by a real answer database, with Edgenuity AI as fallback for anything new.
+              Instant Edgenuity answers on every quiz and test - powered by a real answer database, with Edgenuity AI as fallback for anything new.
             </p>
             <p className="split-desc">
-              Our <strong>Auto Assessment</strong> engine matches each question against a database of saved answers first. If it's not found, AI fills in — all without you lifting a finger. Works on multiple-choice, true/false, and more.
+              Our <strong>Auto Assessment</strong> engine matches each question against a database of saved answers first. If it's not found, AI fills in - all without you lifting a finger. Works on multiple-choice, true/false, and more.
             </p>
             <h3 className="split-subtitle">Completely Undetected</h3>
             <p className="split-desc">
@@ -308,13 +308,13 @@ export default function LandingPage() {
                   <div className="am-dot y"></div>
                   <div className="am-dot g"></div>
                 </div>
-                Edgenuity — Auto Assessment
+                Edgenuity - Auto Assessment
               </div>
               
               <div className="am-body">
                 <div className="am-score-card">
                   <div className="am-score-val">100%</div>
-                  <div className="am-score-label">Quiz Score — Auto Assessment</div>
+                  <div className="am-score-label">Quiz Score - Auto Assessment</div>
                   <div className="am-badges">
                     <span className="am-badge green">✓ Submitted</span>
                     <span className="am-badge blue">Undetected</span>
@@ -378,7 +378,7 @@ export default function LandingPage() {
                 <div className="sm-dot r"></div>
                 <div className="sm-dot y"></div>
                 <div className="sm-dot g"></div>
-                <span className="sm-title">Silent Study — Settings</span>
+                <span className="sm-title">Silent Study - Settings</span>
               </div>
               <div className="sm-list">
                 <div className="sm-row">
@@ -427,7 +427,7 @@ export default function LandingPage() {
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"></path></svg>
                   Activity Tracking
                 </h4>
-                <p>Track scores, completion status, question answers, and session time — all logged to your server automatically.</p>
+                <p>Track scores, completion status, question answers, and session time - all logged to your server automatically.</p>
               </div>
             </div>
             <div className="log-wide-card">
@@ -461,7 +461,7 @@ export default function LandingPage() {
             <div className="discord-text">
               <h2>Stay Updated<br/><span>On Everything</span></h2>
               <p>Silent Study logs every action to your Discord server in real time, so you always know exactly what's happening.</p>
-              <p>Get notified about <strong>every score, skip, and submission.</strong><br/>Fully customizable — choose exactly what gets logged and how.</p>
+              <p>Get notified about <strong>every score, skip, and submission.</strong><br/>Fully customizable - choose exactly what gets logged and how.</p>
             </div>
             
             <div className="discord-right">
@@ -470,7 +470,7 @@ export default function LandingPage() {
                   <div className="sm-dot r"></div>
                   <div className="sm-dot y"></div>
                   <div className="sm-dot g"></div>
-                  <span className="sm-title"># silent-logs — Discord</span>
+                  <span className="sm-title"># silent-logs - Discord</span>
                 </div>
                 <div className="dm-body">
                   <div className="dm-message">
@@ -483,19 +483,19 @@ export default function LandingPage() {
                       <div className="dm-embed">
                         <div className="dm-embed-title">Session Activity Log</div>
                         <div className="dm-embed-row">
-                          <span><span className="dm-check">✓</span> Quiz — World History</span>
+                          <span><span className="dm-check">✓</span> Quiz - World History</span>
                           <span className="dm-green">100%</span>
                         </div>
                         <div className="dm-embed-row">
-                          <span><span className="dm-check">✓</span> Video — Science Ch. 4</span>
+                          <span><span className="dm-check">✓</span> Video - Science Ch. 4</span>
                           <span className="dm-gray">Skipped</span>
                         </div>
                         <div className="dm-embed-row">
-                          <span><span className="dm-check">✓</span> Free Response — English</span>
+                          <span><span className="dm-check">✓</span> Free Response - English</span>
                           <span className="dm-blue">AI Written</span>
                         </div>
                         <div className="dm-embed-row">
-                          <span><span className="dm-check">✓</span> Test — Algebra Unit 3</span>
+                          <span><span className="dm-check">✓</span> Test - Algebra Unit 3</span>
                           <span className="dm-green">100%</span>
                         </div>
                         <div className="dm-embed-footer">
@@ -529,7 +529,7 @@ export default function LandingPage() {
           <div className="updates-split">
             <div className="updates-left">
               <h2>Always <span>Updated</span></h2>
-              <p>Silent Study is constantly updated to stay ahead of Edgenuity's changes, <strong>with thousands of students relying on it daily.</strong> New features ship regularly — including the latest additions below.</p>
+              <p>Silent Study is constantly updated to stay ahead of Edgenuity's changes, <strong>with thousands of students relying on it daily.</strong> New features ship regularly - including the latest additions below.</p>
               
               <span className="u-label">NEW IN 2026</span>
               <div className="u-cards">
@@ -539,7 +539,7 @@ export default function LandingPage() {
                     <span className="u-live-badge">Live Now</span>
                   </div>
                   <h4>Mobile Dashboard</h4>
-                  <p>Monitor live scores and session status from your phone. Send <strong>pause, resume, and stop commands</strong> remotely — all end-to-end encrypted. The server never sees your data.</p>
+                  <p>Monitor live scores and session status from your phone. Send <strong>pause, resume, and stop commands</strong> remotely - all end-to-end encrypted. The server never sees your data.</p>
                 </div>
                 <div className="u-card">
                   <div className="u-card-header">
@@ -547,7 +547,7 @@ export default function LandingPage() {
                     <span className="u-live-badge">Live Now</span>
                   </div>
                   <h4>Scheduler</h4>
-                  <p>Set active time windows, day-of-week filters, and automatic breaks every N activities. <strong>Run during school hours, pause at night</strong> — fully hands-free.</p>
+                  <p>Set active time windows, day-of-week filters, and automatic breaks every N activities. <strong>Run during school hours, pause at night</strong> - fully hands-free.</p>
                 </div>
               </div>
             </div>
@@ -604,14 +604,14 @@ export default function LandingPage() {
 
               {/* Rows */}
               {[
-                { title: "Saved answers & AI fallback", desc: "Most tools rely on just saved answers — Silent Study does that plus AI fallback for new questions", ss: "check", other: "cross" },
+                { title: "Saved answers & AI fallback", desc: "Most tools rely on just saved answers - Silent Study does that plus AI fallback for new questions", ss: "check", other: "cross" },
                 { title: "Scheduler (time windows + breaks)", desc: "Set specific time windows for doing assignments and add random breaks to mimic real behavior", ss: "check", other: "cross" },
-                { title: "Mobile Dashboard (remote control)", desc: "E2E encrypted — server never sees your data", ss: "check", other: "cross" },
+                { title: "Mobile Dashboard (remote control)", desc: "E2E encrypted - server never sees your data", ss: "check", other: "cross" },
                 { title: "Proctorio Support", desc: "Run Silent Study during Proctorio-monitored assessments", ss: "check", other: "cross" },
-                { title: "EdgeEX Full Support", desc: "Full support for EdgeEX quizzes, including activity skipping and video skipper — most bots only support basic question types", ss: "check", other: "dash" },
+                { title: "EdgeEX Full Support", desc: "Full support for EdgeEX quizzes, including activity skipping and video skipper - most bots only support basic question types", ss: "check", other: "dash" },
                 { title: "Video Skipper (EdgeEX)", desc: "Skip videos in EdgeEX quizzes with customizable settings", ss: "check", other: "dash" },
                 { title: "Auto Write", desc: "Generate high-quality free response answers using undetectable AI", ss: "check", other: "dash" },
-                { title: "Activity Skipping (labs, graphs)", desc: "Skip non-question activities in EdgeEX assignments like labs and graphs — most bots can't handle these at all", ss: "check", other: "dash" },
+                { title: "Activity Skipping (labs, graphs)", desc: "Skip non-question activities in EdgeEX assignments like labs and graphs - most bots can't handle these at all", ss: "check", other: "dash" },
                 { title: "Discord Logging", desc: "Log activities to Discord for monitoring and analysis", ss: "check", other: "dash" },
                 { title: "Detection Evasion", desc: "Customizable delays and natural-looking behavior", ss: "check", other: "dash" },
                 { title: "Regular Updates", desc: "Weekly updates to stay ahead of Edgenuity changes", ss: "check", other: "cross" }
@@ -622,10 +622,10 @@ export default function LandingPage() {
                     <div className="c-feat-desc">{row.desc}</div>
                   </div>
                   <div className="cg-cell bot-cell active">
-                    <span className={`c-icon ${row.ss}`}>{row.ss === 'check' ? '✓' : row.ss === 'cross' ? '✕' : '—'}</span>
+                    <span className={`c-icon ${row.ss}`}>{row.ss === 'check' ? '✓' : row.ss === 'cross' ? '✕' : '-'}</span>
                   </div>
                   <div className="cg-cell bot-cell">
-                    <span className={`c-icon ${row.other}`}>{row.other === 'check' ? '✓' : row.other === 'cross' ? '✕' : '—'}</span>
+                    <span className={`c-icon ${row.other}`}>{row.other === 'check' ? '✓' : row.other === 'cross' ? '✕' : '-'}</span>
                   </div>
                 </div>
               ))}
@@ -635,7 +635,7 @@ export default function LandingPage() {
             <div className="comp-legend">
               <span className="legend-title">Legend</span>
               <span><span className="c-icon check">✓</span> Fully supported</span>
-              <span><span className="c-icon dash">—</span> Partial / limited</span>
+              <span><span className="c-icon dash">-</span> Partial / limited</span>
               <span><span className="c-icon cross">✕</span> Not available</span>
             </div>
           </div>

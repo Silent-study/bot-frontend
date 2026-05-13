@@ -85,8 +85,8 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="control-panel-container" style={{justifyContent: 'center', minHeight: '100vh', background: '#070708'}}>
-      <div className="cp-card" style={{maxWidth: '450px', width: '100%', background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.05)'}}>
+    <div className="control-panel-container" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#070708', padding: '2rem'}}>
+      <div className="cp-card" style={{maxWidth: '450px', width: '100%', background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.05)', margin: '0 auto'}}>
         <div className="cp-card-title" style={{justifyContent: 'center', fontSize: '1.5rem', marginBottom: '0.5rem'}}>
           {step === 1 ? 'Finalize Checkout' : 'Verify Email'}
         </div>
@@ -149,8 +149,13 @@ export default function RegisterPage() {
                 <span style={{color: '#fff', fontWeight: '600', fontSize: '0.85rem'}}>{planId.toUpperCase()}</span>
               </div>
             </div>
-            <button className="btn-launch" type="submit" disabled={loading} style={{background: '#2563eb'}}>
-              {loading ? 'Sending OTP...' : 'Next: Verify Email →'}
+            <button className="btn-launch" type="submit" disabled={loading} style={{background: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'}}>
+              {loading ? 'Sending OTP...' : (
+                <>
+                  Next: Verify Email
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </>
+              )}
             </button>
           </form>
         ) : (
@@ -159,11 +164,19 @@ export default function RegisterPage() {
               <label className="form-label">Verification Code</label>
               <input type="text" className="form-input" required placeholder="123456" maxLength="6" value={formData.otp} onChange={e => setFormData({...formData, otp: e.target.value})} />
             </div>
-            <button className="btn-launch" type="submit" disabled={loading} style={{background: '#22c55e'}}>
-              {loading ? 'Verifying...' : 'Finalize & Pay →'}
+            <button className="btn-launch" type="submit" disabled={loading} style={{background: '#22c55e', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'}}>
+              {loading ? 'Verifying...' : (
+                <>
+                  Finalize & Pay
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </>
+              )}
             </button>
             <div style={{marginTop: '1rem', textAlign: 'center'}}>
-              <span style={{color: '#737373', fontSize: '0.85rem', cursor: 'pointer'}} onClick={() => setStep(1)}>← Back to details</span>
+              <span style={{color: '#737373', fontSize: '0.85rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.4rem'}} onClick={() => setStep(1)}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back to details
+              </span>
             </div>
           </form>
         )}
@@ -172,8 +185,9 @@ export default function RegisterPage() {
           Secure payment powered by Stripe.
         </div>
       </div>
-      <div style={{marginTop: '2rem', color: '#404040', fontSize: '0.85rem', cursor: 'pointer'}} onClick={() => navigate('/')}>
-        ← Back to Pricing
+      <div style={{marginTop: '2rem', color: '#404040', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem'}} onClick={() => navigate('/')}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Pricing
       </div>
     </div>
   );
