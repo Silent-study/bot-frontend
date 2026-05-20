@@ -1,4 +1,5 @@
-name: Deploy Frontend
+cat > /var/www/silentstudy/frontend/.github/workflows/deploy.yml << 'EOF'
+name: 🚀 Frontend Deployment
 
 on:
   push:
@@ -7,20 +8,46 @@ on:
 
 jobs:
   deploy:
+    name: Deploy Frontend to VPS
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Code
+      - name: 📥 Step 1 - Checkout Latest Code
         uses: actions/checkout@v3
 
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@master
+      - name: 📦 Step 2 - Install Dependencies
+        run: |
+          echo "Installing frontend dependencies..."
+          npm install
+          echo "✅ Dependencies installed successfully"
+
+      - name: 🏗️ Step 3 - Build Frontend
+        run: |
+          echo "Building the frontend app..."
+          npm run build
+          echo "✅ Build completed successfully"
+
+      - name: 🔄 Step 4 - Pull Latest Code on VPS
+        uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            echo "📂 Navigating to frontend directory..."
             cd /var/www/silentstudy/frontend
+
+            echo "⬇️ Pulling latest code from GitHub..."
             git pull origin main
+
+            echo "📦 Installing dependencies on VPS..."
             npm install
+
+            echo "🏗️ Building frontend on VPS..."
             npm run build
-            echo "✅ Frontend Deployment Successful!"
+
+            echo "✅ Step 4 Complete - Frontend is live!"
+
+      - name: 🎉 Step 5 - Deployment Complete
+        run: echo "🎉 Frontend successfully deployed to silentstudy.net"
+EOF
