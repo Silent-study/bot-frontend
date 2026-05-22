@@ -788,9 +788,13 @@ export default function LandingPage({ isLoggedIn }) {
           </div>
         </div>
         <div className="footer-bottom">
-          <div className="footer-brand">
-            <div className="bot-logo" style={{width:'24px', height:'24px', fontSize:'14px'}}>S</div>
-            <span>Silent Study</span>
+          <div className="footer-brand" style={{display: 'flex', alignItems: 'center'}}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '8px'}}>
+              <path d="M12 2L2 7l10 5 10-5-10-5Z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+            <span style={{fontWeight: 800}}>SilentStudy</span>
             <span className="v-badge">v1.2.0</span>
           </div>
           <div className="footer-legal">

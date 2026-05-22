@@ -216,7 +216,12 @@ export default function ControlPanel({ onLogout }) {
       )}
       <aside className="sidebar">
         <div className="sidebar-logo">
-          SILENT<span>STUDY</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '8px'}}>
+            <path d="M12 2L2 7l10 5 10-5-10-5Z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+          Silent<span>Study</span>
         </div>
         <nav className="sidebar-nav">
           <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>Dashboard</div>

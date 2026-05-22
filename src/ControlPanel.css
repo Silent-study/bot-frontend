@@ -21,6 +21,8 @@
   color: #fff;
   margin-bottom: 3rem;
   letter-spacing: -1px;
+  display: flex;
+  align-items: center;
 }
 
 .sidebar-logo span {
