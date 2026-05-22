@@ -29,6 +29,14 @@ export default function LandingPage({ isLoggedIn }) {
     }
   };
 
+  const scrollToFeatures = (e) => {
+    if (e) e.preventDefault();
+    const features = document.getElementById('features');
+    if (features) {
+      features.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const handleCheckout = (planId) => {
     const addons = [];
     if (selectedAddon === 'service' || selectedAddon === 'both') addons.push('service');
@@ -245,15 +253,10 @@ export default function LandingPage({ isLoggedIn }) {
             </p>
             
             <div className="hero-actions">
-              <button className="btn-outline">Explore Features</button>
+              <button className="btn-outline" onClick={scrollToFeatures}>Explore Features</button>
               <button className="nav-btn-primary" onClick={isLoggedIn ? () => navigate('/dashboard') : scrollToPricing} style={{padding: '0.8rem 2rem', fontSize: '1.05rem'}}>
                 {isLoggedIn ? 'Go to Dashboard' : 'Get Started'}
               </button>
-              {!isLoggedIn && (
-                <button className="btn-outline" onClick={() => navigate('/login')} style={{padding: '0.8rem 2rem', fontSize: '1.05rem'}}>
-                  Login
-                </button>
-              )}
             </div>
             
             <div className="hero-stats">
