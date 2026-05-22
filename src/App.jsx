@@ -6,29 +6,35 @@ import LandingPage from './pages/LandingPage';
 import ControlPanel from './pages/ControlPanel';
 import RegisterPage from './pages/RegisterPage';
 import ForgotPassword from './pages/ForgotPassword';
+import LoginPage from './pages/LoginPage';
+import { isAuthenticated as checkAuth, clearAuth } from './services/api';
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authed, setAuthed] = useState(false);
 
   useEffect(() => {
-    const paid = localStorage.getItem('isPaid');
-    const params = new URLSearchParams(window.location.search);
-    const uid = params.get('uid');
-
-    if (paid === 'true' || uid) {
-      setIsAuthenticated(true);
-    }
+    setAuthed(checkAuth());
   }, []);
+
+  const handleAuthSuccess = () => {
+    setAuthed(true);
+  };
+
+  const handleLogout = () => {
+    clearAuth();
+    setAuthed(false);
+  };
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/register" element={<RegisterPage onAuthSuccess={() => setIsAuthenticated(true)} />} />
+        <Route path="/" element={<LandingPage isLoggedIn={authed} onAuthSuccess={handleAuthSuccess} />} />
+        <Route path="/register" element={<RegisterPage onAuthSuccess={handleAuthSuccess} />} />
+        <Route path="/login" element={<LoginPage onAuthSuccess={handleAuthSuccess} />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route 
           path="/dashboard" 
-          element={(isAuthenticated || new URLSearchParams(window.location.search).get('uid')) ? <ControlPanel /> : <Navigate to="/register" />} 
+          element={authed ? <ControlPanel onLogout={handleLogout} /> : <Navigate to="/" />} 
         />
       </Routes>
     </Router>

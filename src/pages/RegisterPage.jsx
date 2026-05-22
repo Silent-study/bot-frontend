@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { sendOtp, register, createCheckout, isAuthenticated } from '../services/api';
 import '../ControlPanel.css';
 
 export default function RegisterPage() {
@@ -7,7 +8,7 @@ export default function RegisterPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem('isPaid') === 'true') {
+    if (isAuthenticated()) {
       navigate('/dashboard');
     }
   }, [navigate]);
@@ -32,11 +33,7 @@ export default function RegisterPage() {
     }
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3000/send-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email })
-      });
+      const res = await sendOtp(formData.email);
       if (res.ok) {
         setStep(2);
       } else {
@@ -54,26 +51,18 @@ export default function RegisterPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const regRes = await fetch('http://localhost:3000/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          email: formData.email, 
-          password: formData.password,
-          plan: planId,
-          addons,
-          otp: formData.otp
-        })
+      const regRes = await register({ 
+        email: formData.email, 
+        password: formData.password,
+        plan: planId,
+        addons,
+        otp: formData.otp
       });
 
       const userData = await regRes.json();
       if (!regRes.ok) throw new Error(userData.error || 'Registration failed');
 
-      const stripeRes = await fetch('http://localhost:3000/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId, addons, userId: userData.userId })
-      });
+      const stripeRes = await createCheckout({ planId, addons, userId: userData.userId });
 
       const session = await stripeRes.json();
       if (session.url) window.location.href = session.url;
@@ -139,7 +128,10 @@ export default function RegisterPage() {
               </div>
             </div>
             
-            <div style={{textAlign: 'right', marginBottom: '1rem'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '1rem'}}>
+              <span style={{color: '#737373', fontSize: '0.85rem'}}>
+                Already have an account? <span style={{color: '#3b82f6', cursor: 'pointer', fontWeight: '600'}} onClick={() => navigate('/login')}>Login</span>
+              </span>
               <span style={{color: '#3b82f6', fontSize: '0.85rem', cursor: 'pointer'}} onClick={() => navigate('/forgot-password')}>Forgot Password?</span>
             </div>
 

@@ -1,131 +1,232 @@
 import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
+import { getToken, getAuthData, getStats, getUser, getSocketUrl, clearAuth, downloadExtension } from '../services/api';
 import '../ControlPanel.css';
 
-const SOCKET_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000' : window.location.origin;
+// Map backend event codes to friendly labels
+function eventToLabel(event) {
+  const map = {
+    'MCQ_ANSWERED': '✅ MCQ Answered',
+    'ESSAY_ANSWERED': '📝 Essay Written',
+    'VOCAB_DONE': '📖 Vocab Completed',
+    'VIDEO_SKIP_DONE': '⏭️ Video Skipped',
+    'VIDEO_SKIP_START': '▶️ Video Skip Started',
+    'NEXT_ACTIVITY_CLICKED': '➡️ Next Activity',
+    'CHECKBOX_ANSWERED': '☑️ Checkbox Answered',
+    'DROPDOWN_ANSWERED': '📋 Dropdown Answered',
+    'DIRECT_INSTRUCTION_DONE': '🎬 Direct Instruction Done',
+    'DIRECT_INSTRUCTION_START': '🎬 Direct Instruction Started',
+    'ACTIVITY_CYCLE_START': '🔄 Activity Cycle',
+  };
+  return map[event] || event;
+}
 
-export default function ControlPanel() {
+function eventToType(event) {
+  if (!event) return 'info';
+  if (event.includes('ANSWERED') || event.includes('DONE') || event.includes('COMPLETED')) return 'system';
+  if (event.includes('ERROR') || event.includes('FAIL')) return 'error';
+  if (event.includes('WARN') || event.includes('SKIP')) return 'warning';
+  return 'info';
+}
+
+export default function ControlPanel({ onLogout }) {
   const navigate = useNavigate();
   const [socket, setSocket] = useState(null);
-  const [creds, setCreds] = useState({
-    username: 'Secor.zoe',
-    password: 'r9j5723t',
-    courseName: ''
-  });
-  const [botRunning, setBotRunning] = useState(false);
-  const [currentState, setCurrentState] = useState('IDLE');
-  const [logs, setLogs] = useState([{ msg: 'Ready to launch. Enter credentials and click start.', type: 'system' }]);
+  const [socketStatus, setSocketStatus] = useState('connecting'); // connecting, connected, error
+  const [logs, setLogs] = useState([]);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [toast, setToast] = useState(null);
   const logsRef = useRef(null);
 
-  const [subscription, setSubscription] = useState({
-    plan: 'Loading...',
-    status: 'Checking...',
-    expiry: '...'
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const [stats, setStats] = useState({
+    questionsAnswered: 0,
+    videosSkipped: 0,
+    vocabCompleted: 0,
+    activitiesTotal: 0,
   });
 
+  const [userInfo, setUserInfo] = useState({
+    email: '',
+    plan: '',
+    expiryDate: null,
+    addons: [],
+    licenseKey: '',
+    isPaid: false,
+  });
+
+  // Load user info & stats on mount
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const uid = params.get('uid');
+    // Set initial data from localStorage (instant, no network)
+    const authData = getAuthData();
+    setUserInfo(prev => ({
+      ...prev,
+      email: authData.email || '',
+      plan: authData.plan || '',
+      expiryDate: authData.expiresAt || null,
+      addons: authData.addons || [],
+    }));
 
-    const verifyAndFetch = async () => {
-      if (uid) {
-        // 1. Verify Payment
-        try {
-          const res = await fetch(`http://localhost:3000/verify-payment?uid=${uid}`);
-          const data = await res.json();
-          if (data.isPaid) {
-            localStorage.setItem('isPaid', 'true');
-            localStorage.setItem('userId', uid);
-          }
-        } catch (err) {
-          console.error('Verification failed');
+    // Fetch fresh user data from backend
+    getUser()
+      .then(data => {
+        setUserInfo({
+          email: data.email,
+          plan: data.plan,
+          expiryDate: data.expiryDate,
+          addons: data.addons || [],
+          licenseKey: data.licenseKey || '',
+          isPaid: data.isPaid,
+        });
+      })
+      .catch(err => {
+        console.error('Failed to load user info:', err);
+      });
+
+    // Load 24h stats
+    getStats()
+      .then(data => {
+        setStats({
+          questionsAnswered: data.questionsAnswered || 0,
+          videosSkipped: data.videosSkipped || 0,
+          vocabCompleted: data.vocabCompleted || 0,
+          activitiesTotal: data.activitiesTotal || 0,
+        });
+        // Also load recent logs from stats
+        if (data.recentLogs && data.recentLogs.length > 0) {
+          setLogs(data.recentLogs.map(l => ({
+            msg: `${eventToLabel(l.event)}${l.detail ? ' — ' + l.detail : ''}`,
+            type: eventToType(l.event),
+            timestamp: l.timestamp,
+          })));
         }
-      }
+      })
+      .catch(err => {
+        console.error('Failed to load stats:', err);
+      });
+  }, []);
 
-      // 2. Fetch User Data
-      const currentUid = uid || localStorage.getItem('userId');
-      if (currentUid) {
-        try {
-          // We need an endpoint for this, but for now we'll mock or add one
-          // Let's assume we can fetch it. For now, I'll just set it based on localStorage
-          setSubscription({
-            plan: 'Week Key (Pro)',
-            status: 'Active',
-            expiry: '4 days, 12 hours'
-          });
-        } catch (err) {}
-      }
-    };
+  // Socket.IO connection — aligned with backend events
+  useEffect(() => {
+    const token = getToken();
+    if (!token) return;
 
-    verifyAndFetch();
-
-    const s = io(SOCKET_URL, { transports: ['websocket'] });
+    const s = io(getSocketUrl(), { transports: ['websocket'] });
     
     s.on('connect', () => {
-      console.log('Connected to server');
+      console.log('[Dashboard] Socket connected, authenticating...');
+      s.emit('authenticate', token);
     });
 
-    s.on('log', (msg) => {
-      let type = 'info';
-      if (msg.includes('✅') || msg.includes('success')) type = 'system';
-      if (msg.includes('❌') || msg.includes('Error')) type = 'error';
-      if (msg.includes('⚠️')) type = 'warning';
-
-      setLogs(prev => [...prev, { msg, type }]);
+    s.on('authenticated', ({ userId, plan }) => {
+      console.log('[Dashboard] Authenticated:', userId, plan);
+      setSocketStatus('connected');
+      setLogs(prev => [...prev, {
+        msg: '🔗 Connected to live feed',
+        type: 'system',
+        timestamp: new Date().toISOString(),
+      }]);
     });
 
-    s.on('state', (state) => setCurrentState(state));
+    s.on('auth-error', ({ error }) => {
+      console.error('[Dashboard] Auth error:', error);
+      setSocketStatus('error');
+      setLogs(prev => [...prev, {
+        msg: '❌ Authentication failed: ' + error,
+        type: 'error',
+        timestamp: new Date().toISOString(),
+      }]);
+    });
 
-    s.on('bot-finished', () => {
-      setBotRunning(false);
-      setCurrentState('FINISHED');
+    s.on('activity-log', ({ event, detail, timestamp }) => {
+      setLogs(prev => [...prev, {
+        msg: `${eventToLabel(event)}${detail ? ' — ' + detail : ''}`,
+        type: eventToType(event),
+        timestamp: timestamp || new Date().toISOString(),
+      }]);
+
+      // Update stats counters in real-time
+      setStats(prev => {
+        const updated = { ...prev };
+        if (event.includes('ANSWERED')) updated.questionsAnswered += 1;
+        if (event === 'VIDEO_SKIP_DONE') updated.videosSkipped += 1;
+        if (event === 'VOCAB_DONE') updated.vocabCompleted += 1;
+        if (event === 'NEXT_ACTIVITY_CLICKED') updated.activitiesTotal += 1;
+        return updated;
+      });
+    });
+
+    s.on('disconnect', () => {
+      setSocketStatus('connecting');
     });
 
     setSocket(s);
     return () => s.disconnect();
   }, []);
 
+  // Auto-scroll logs
   useEffect(() => {
     if (logsRef.current) {
       logsRef.current.scrollTop = logsRef.current.scrollHeight;
     }
   }, [logs]);
 
-  const handleStart = () => {
-    if (!socket || !creds.username || !creds.password) return;
-    setBotRunning(true);
-    setCurrentState('STARTING');
-    setLogs([{ msg: '🚀 Launching automation...', type: 'system' }]);
-    socket.emit('start-bot', creds);
-  };
-
-  const handleStop = () => {
-    if (!socket) return;
-    socket.emit('stop-bot');
-    setBotRunning(false);
-    setCurrentState('STOPPED');
-  };
-
   const handleLogout = () => {
-    localStorage.removeItem('isPaid');
-    localStorage.removeItem('userId');
+    if (onLogout) onLogout();
     navigate('/');
-    window.location.reload();
+  };
+
+  // Format expiry date
+  const formatExpiry = (dateStr) => {
+    if (!dateStr) return 'N/A';
+    const expiry = new Date(dateStr);
+    const now = new Date();
+    const diff = expiry - now;
+    if (diff <= 0) return 'Expired';
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    if (days > 0) return `${days}d ${hours}h remaining`;
+    return `${hours}h remaining`;
+  };
+
+  const formatPlan = (plan) => {
+    const map = { day: 'Day Key', week: 'Week Key', month: 'Month Key', six_month: '6 Months Key' };
+    return map[plan] || plan || 'N/A';
+  };
+
+  const formatTimestamp = (ts) => {
+    if (!ts) return '';
+    const d = new Date(ts);
+    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
 
   return (
     <div className="dashboard-wrapper">
+      {toast && (
+        <div className="toast-container">
+          <div className={`toast ${toast.type}`}>
+            {toast.message}
+          </div>
+        </div>
+      )}
       <aside className="sidebar">
         <div className="sidebar-logo">
           SILENT<span>STUDY</span>
         </div>
         <nav className="sidebar-nav">
-          <div className="nav-item active">Dashboard</div>
-          <div className="nav-item">Automation Logs</div>
-          <div className="nav-item">Settings</div>
+          <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>Dashboard</div>
+          <div className={`nav-item ${activeTab === 'logs' ? 'active' : ''}`} onClick={() => setActiveTab('logs')}>Activity Logs</div>
+          <div className={`nav-item ${activeTab === 'extension' ? 'active' : ''}`} onClick={() => setActiveTab('extension')}>Extension Guide</div>
         </nav>
         <div className="sidebar-footer">
+          <div style={{fontSize: '0.75rem', color: '#525252', marginBottom: '0.75rem', textAlign: 'center'}}>
+            {userInfo.email || 'Loading...'}
+          </div>
           <button className="logout-btn" onClick={handleLogout}>
             Logout
           </button>
@@ -134,93 +235,162 @@ export default function ControlPanel() {
 
       <main className="main-content">
         <header className="dashboard-header">
-          <div className="header-title">Automation Dashboard</div>
+          <div className="header-title">Dashboard</div>
           <div className="user-profile">
-            <div className="user-badge">{localStorage.getItem('userId')?.substring(0, 8) || 'User'}</div>
+            <div className={`connection-badge ${socketStatus}`}>
+              <span className="connection-dot"></span>
+              {socketStatus === 'connected' ? 'Live' : socketStatus === 'error' ? 'Error' : 'Connecting...'}
+            </div>
           </div>
         </header>
 
         <div className="dashboard-scrollable">
-          <div className="sub-card">
-            <div className="sub-info">
-              <h3>Active Subscription</h3>
-              <p>Your account is fully authorized for Silent Study Pro features.</p>
-            </div>
-            <div className="sub-status">
-              <div className="stat-box">
-                <div className="stat-label">Current Plan</div>
-                <div className="stat-value">{subscription.plan}</div>
-              </div>
-              <div className="stat-box">
-                <div className="stat-label">Status</div>
-                <div className={`stat-value ${subscription.status === 'Active' ? 'success' : ''}`}>{subscription.status}</div>
-              </div>
-              <div className="stat-box">
-                <div className="stat-label">Expires In</div>
-                <div className="stat-value">{subscription.expiry}</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="cp-grid">
-            <div className="cp-card">
-              <div className="cp-card-title">Launch Automation</div>
-              <div className="form-group">
-                <label className="form-label">Edgenuity Username</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  placeholder="Username" 
-                  value={creds.username} 
-                  onChange={e => setCreds({...creds, username: e.target.value})} 
-                  disabled={botRunning}
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Edgenuity Password</label>
-                <input 
-                  type="password" 
-                  className="form-input" 
-                  placeholder="Password" 
-                  value={creds.password} 
-                  onChange={e => setCreds({...creds, password: e.target.value})} 
-                  disabled={botRunning}
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Target Course (Optional)</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  placeholder="e.g. English 10" 
-                  value={creds.courseName} 
-                  onChange={e => setCreds({...creds, courseName: e.target.value})} 
-                  disabled={botRunning}
-                />
-              </div>
-
-              {botRunning ? (
-                <button className="btn-stop" onClick={handleStop}>Stop Automation</button>
-              ) : (
-                <button className="btn-launch" onClick={handleStart}>Start Bot</button>
-              )}
-            </div>
-
-            <div className="cp-card">
-              <div className="cp-card-title">
-                Live Activity Logs
-                <div className={`status-badge ${botRunning ? 'RUNNING' : ''}`}>{currentState}</div>
-              </div>
-              <div className="logs-window" ref={logsRef}>
-                {logs.length === 0 && <div className="log-entry info">Ready to launch. Enter credentials and click start.</div>}
-                {logs.map((log, i) => (
-                  <div key={i} className={`log-entry ${log.type}`}>
-                    {log.msg}
+          {activeTab === 'dashboard' && (
+            <>
+              {/* Subscription Card */}
+              <div className="sub-card">
+                <div className="sub-info">
+                  <h3>Active Subscription</h3>
+                  <p>Your account is authorized for Silent Study Pro features.</p>
+                </div>
+                <div className="sub-status">
+                  <div className="stat-box">
+                    <div className="stat-label">Current Plan</div>
+                    <div className="stat-value">{formatPlan(userInfo.plan)}</div>
                   </div>
-                ))}
+                  <div className="stat-box">
+                    <div className="stat-label">Status</div>
+                    <div className={`stat-value ${userInfo.isPaid ? 'success' : ''}`}>
+                      {userInfo.isPaid ? 'Active' : 'Inactive'}
+                    </div>
+                  </div>
+                  <div className="stat-box">
+                    <div className="stat-label">Expires In</div>
+                    <div className="stat-value">{formatExpiry(userInfo.expiryDate)}</div>
+                  </div>
+                  {userInfo.licenseKey && (
+                    <div className="stat-box">
+                      <div className="stat-label">License Key</div>
+                      <div className="stat-value" style={{fontSize: '0.85rem', letterSpacing: '0.5px'}}>{userInfo.licenseKey}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Stats Row */}
+              <div className="stats-row">
+                <div className="stat-card">
+                  <div className="stat-card-value">{stats.questionsAnswered}</div>
+                  <div className="stat-card-label">Questions Answered</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-card-value">{stats.videosSkipped}</div>
+                  <div className="stat-card-label">Videos Skipped</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-card-value">{stats.vocabCompleted}</div>
+                  <div className="stat-card-label">Vocab Completed</div>
+                </div>
+                <div className="stat-card">
+                  <div className="stat-card-value">{stats.activitiesTotal}</div>
+                  <div className="stat-card-label">Total Activities</div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {activeTab === 'logs' && (
+            <div className="cp-grid">
+              {/* Live Activity Log */}
+              <div className="cp-card" style={{gridColumn: '1 / -1'}}>
+                <div className="cp-card-title">
+                  Live Activity Log
+                  <div className={`status-badge ${socketStatus === 'connected' ? 'RUNNING' : ''}`}>
+                    {socketStatus === 'connected' ? 'LIVE' : 'OFFLINE'}
+                  </div>
+                </div>
+                <div className="logs-window" ref={logsRef}>
+                  {logs.length === 0 && (
+                    <div className="log-entry info">
+                      Waiting for activity from Chrome Extension... Install the extension and enable the bot to see live logs here.
+                    </div>
+                  )}
+                  {logs.map((log, i) => (
+                    <div key={i} className={`log-entry ${log.type}`}>
+                      <span className="log-time">{formatTimestamp(log.timestamp)}</span>
+                      {log.msg}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          )}
+
+          {activeTab === 'extension' && (
+            <div className="cp-card">
+              <div className="cp-card-title" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <span>Chrome Extension Setup</span>
+                <button 
+                  onClick={async () => {
+                    try {
+                      await downloadExtension();
+                      showToast('Extension downloaded successfully!');
+                    } catch (e) {
+                      showToast('Download failed. Please try again.', 'error');
+                    }
+                  }} 
+                  style={{
+                    background: '#2563eb', 
+                    color: 'white', 
+                    border: 'none', 
+                    padding: '0.5rem 1rem', 
+                    borderRadius: '6px', 
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '500'
+                  }}>
+                  Download Extension (ZIP)
+                </button>
+              </div>
+              <div className="setup-steps" style={{marginTop: '1.5rem'}}>
+                <div className="setup-step">
+                  <div className="step-number">1</div>
+                  <div className="step-content">
+                    <h4>Download & Extract</h4>
+                    <p>Click the <b>Download Extension</b> button above to get the zip file. Extract the downloaded zip file into a folder on your computer.</p>
+                  </div>
+                </div>
+                <div className="setup-step">
+                  <div className="step-number">2</div>
+                  <div className="step-content">
+                    <h4>Install in Chrome</h4>
+                    <p>Go to <code 
+                      style={{cursor: 'pointer', color: '#3b82f6', textDecoration: 'underline'}} 
+                      onClick={() => {
+                        navigator.clipboard.writeText('chrome://extensions');
+                        showToast('Copied chrome://extensions to clipboard! Paste it in a new tab.');
+                      }}
+                      title="Click to copy"
+                    >chrome://extensions</code> in your browser. Turn on <b>Developer mode</b> (top right). Click <b>Load unpacked</b> and select the extracted folder.</p>
+                  </div>
+                </div>
+                <div className="setup-step">
+                  <div className="step-number">3</div>
+                  <div className="step-content">
+                    <h4>Login to Extension</h4>
+                    <p>Click the Silent Study extension icon in your Chrome toolbar. Log in using your email and password.</p>
+                  </div>
+                </div>
+                <div className="setup-step">
+                  <div className="step-number">4</div>
+                  <div className="step-content">
+                    <h4>Start Automating</h4>
+                    <p>Toggle the bot ON in the extension popup. Navigate to your Edgenuity class and Silent Study will handle everything automatically!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>

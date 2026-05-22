@@ -1,17 +1,18 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
-export default function LandingPage() {
+export default function LandingPage({ isLoggedIn }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const carouselRef = useRef(null);
-  const [selectedAddon, setSelectedAddon] = useState('base'); // 'base', 'service', 'proctor', 'both'
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [selectedAddon, setSelectedAddon] = useState('base');
 
+  // Handle ?payment=success from Stripe redirect
   useEffect(() => {
-    if (localStorage.getItem('isPaid') === 'true' || localStorage.getItem('userId')) {
-      setIsLoggedIn(true);
+    if (searchParams.get('payment') === 'success') {
+      navigate('/login?payment=success', { replace: true });
     }
-  }, []);
+  }, [searchParams, navigate]);
 
   const calculatePrice = (basePrice) => {
     let extra = 0;
@@ -191,9 +192,20 @@ export default function LandingPage() {
           <a href="#pricing" className="nav-link">Pricing</a>
           <a href="#tutorial" className="nav-link">Tutorial</a>
           <a href="#support" className="nav-link">Support</a>
-          <button className="nav-btn-primary" onClick={isLoggedIn ? () => navigate('/dashboard') : scrollToPricing}>
-            {isLoggedIn ? 'Go to Dashboard' : 'Get Started'}
-          </button>
+          {isLoggedIn ? (
+            <button className="nav-btn-primary" onClick={() => navigate('/dashboard')}>
+              Go to Dashboard
+            </button>
+          ) : (
+            <>
+              <button className="nav-link" style={{background:'none', border:'none', cursor:'pointer', color:'var(--text-secondary)'}} onClick={() => navigate('/login')}>
+                Login
+              </button>
+              <button className="nav-btn-primary" onClick={scrollToPricing}>
+                Get Started
+              </button>
+            </>
+          )}
         </div>
       </nav>
 
@@ -237,6 +249,11 @@ export default function LandingPage() {
               <button className="nav-btn-primary" onClick={isLoggedIn ? () => navigate('/dashboard') : scrollToPricing} style={{padding: '0.8rem 2rem', fontSize: '1.05rem'}}>
                 {isLoggedIn ? 'Go to Dashboard' : 'Get Started'}
               </button>
+              {!isLoggedIn && (
+                <button className="btn-outline" onClick={() => navigate('/login')} style={{padding: '0.8rem 2rem', fontSize: '1.05rem'}}>
+                  Login
+                </button>
+              )}
             </div>
             
             <div className="hero-stats">

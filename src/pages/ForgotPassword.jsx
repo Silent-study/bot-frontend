@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { forgotPassword, resetPassword } from '../services/api';
 import '../ControlPanel.css';
 
 export default function ForgotPassword() {
@@ -14,11 +15,7 @@ export default function ForgotPassword() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3000/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
+      const res = await forgotPassword(email);
       if (res.ok) {
         setStep(2);
       } else {
@@ -36,14 +33,10 @@ export default function ForgotPassword() {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3000/reset-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp, newPassword })
-      });
+      const res = await resetPassword({ email, otp, newPassword });
       if (res.ok) {
         alert('Password updated! Please login.');
-        navigate('/register');
+        navigate('/');
       } else {
         const data = await res.json();
         alert(data.error || 'Reset failed');
@@ -92,7 +85,7 @@ export default function ForgotPassword() {
         )}
 
         <div style={{marginTop: '1.5rem', textAlign: 'center'}}>
-          <span style={{color: '#404040', fontSize: '0.85rem', cursor: 'pointer'}} onClick={() => navigate('/register')}>← Back to Login</span>
+          <span style={{color: '#404040', fontSize: '0.85rem', cursor: 'pointer'}} onClick={() => navigate('/')}>← Back to Home</span>
         </div>
       </div>
     </div>
