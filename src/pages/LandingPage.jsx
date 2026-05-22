@@ -65,8 +65,8 @@ export default function LandingPage({ isLoggedIn }) {
     return () => clearInterval(interval);
   }, []);
   const testimonials = [
-    { initial: 'V', name: 'Vaxmpi', handle: '@vaxmpi', text: 'bought silent study 6 months ago and now im graduating today months earlier, real life saver and best decision i made', color: '#3b82f6', pos: 'top-left' },
-    { initial: 'd', name: 'dandydcitrus', handle: '@dandydcitrus', text: '11/10 best bot ive tried for edgeX dosnt get them all wrong and just turn off', color: '#10b981', pos: 'top-right' }
+    { initial: 'S', name: 'Student 129', handle: '@student129', text: 'bought silent study 6 months ago and now im graduating today months earlier, real life saver and best decision i made', color: '#3b82f6', pos: 'top-left' },
+    { initial: 'A', name: 'Alex M.', handle: '@alex_m', text: '11/10 best bot ive tried for edgeX dosnt get them all wrong and just turn off', color: '#10b981', pos: 'top-right' }
   ];
 
   const carouselFeatures = [
@@ -471,9 +471,7 @@ export default function LandingPage({ isLoggedIn }) {
               </div>
             ))}
           </div>
-          <div style={{ textAlign: 'center', marginTop: '3rem' }}>
-            <button className="btn-outline" style={{ borderRadius: '24px', padding: '0.8rem 2rem' }}>Explore all features →</button>
-          </div>
+
         </section>
 
         <section className="discord-section">
@@ -669,12 +667,7 @@ export default function LandingPage({ isLoggedIn }) {
             <span><strong>6,767 students</strong> purchased a key in the last 24 hours</span>
           </div>
 
-          <div className="pricing-tabs">
-            <div className={`p-tab ${selectedAddon === 'base' ? 'active' : ''}`} onClick={() => setSelectedAddon('base')}>Base</div>
-            <div className={`p-tab ${selectedAddon === 'service' ? 'active' : ''}`} onClick={() => setSelectedAddon('service')}>+ Service Key <span style={{fontSize:'10px', opacity:0.6}}>ⓘ</span></div>
-            <div className={`p-tab ${selectedAddon === 'proctor' ? 'active' : ''}`} onClick={() => setSelectedAddon('proctor')}>+ Proctor Bypass <span style={{fontSize:'10px', opacity:0.6}}>ⓘ</span></div>
-            <div className={`p-tab ${selectedAddon === 'both' ? 'active' : ''}`} onClick={() => setSelectedAddon('both')}>+ Both Add-ons <span style={{fontSize:'10px', opacity:0.6}}>ⓘ</span></div>
-          </div>
+
 
           <div className="pricing-grid">
             <div className="p-card">
@@ -759,11 +752,7 @@ export default function LandingPage({ isLoggedIn }) {
                 Lifetime Updates
               </div>
             </div>
-            <div className="fb-footer">
-              <span>Add-ons available:</span>
-              <div className="fb-badge">Service Key (up to 5 users)</div>
-              <div className="fb-badge">Proctorio Bypass</div>
-            </div>
+
           </div>
         </section>
       </main>
