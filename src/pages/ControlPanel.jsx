@@ -172,7 +172,7 @@ export default function ControlPanel({ onLogout, activeTab = 'dashboard' }) {
     const token = getToken();
     if (!token) return;
 
-    const s = io(getSocketUrl(), { transports: ['websocket'] });
+    const s = io(getSocketUrl(), { transports: ['polling', 'websocket'] });
     
     s.on('connect', () => {
       console.log('[Dashboard] Socket connected, authenticating...');
