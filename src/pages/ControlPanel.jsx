@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
-import { getToken, getAuthData, getStats, getUser, getSocketUrl, clearAuth, downloadExtension } from '../services/api';
+import { getToken, getAuthData, getStats, getUser, getSocketUrl, clearAuth, downloadExtension, getConfig, saveConfig, getNotes } from '../services/api';
 import '../ControlPanel.css';
 
 // Map backend event codes to friendly labels
@@ -60,6 +60,25 @@ export default function ControlPanel({ onLogout }) {
     isPaid: false,
   });
 
+  const [botActive, setBotActive] = useState(false);
+  const [config, setConfig] = useState({
+    autoAdvance: true,
+    autoSubmit: true,
+    autoAssessment: true,
+    assessmentAccuracy: 75,
+    autoAssignment: true,
+    autoWrite: true,
+    autoProject: true,
+    autoVocab: true,
+  });
+  
+  const [notesData, setNotesData] = useState({
+    notes: [],
+    total: 0,
+    page: 1,
+    pages: 1,
+  });
+
   // Load user info & stats on mount
   useEffect(() => {
     // Set initial data from localStorage (instant, no network)
@@ -109,7 +128,34 @@ export default function ControlPanel({ onLogout }) {
       .catch(err => {
         console.error('Failed to load stats:', err);
       });
+
+    // Load config
+    getConfig()
+      .then(data => {
+        if (data.config) setConfig(data.config);
+        setBotActive(!!data.botActive);
+      })
+      .catch(err => console.error('Failed to load config:', err));
+      
+    // Load initial notes
+    loadNotes(1);
   }, []);
+
+  const loadNotes = (page) => {
+    getNotes(page)
+      .then(data => setNotesData(data))
+      .catch(err => console.error('Failed to load notes:', err));
+  };
+
+  const handleSaveConfig = () => {
+    if (botActive) {
+      showToast('Cannot update config while bot is active. Stop the bot first.', 'error');
+      return;
+    }
+    saveConfig(config)
+      .then(() => showToast('Configuration saved successfully!'))
+      .catch(err => showToast(err.message, 'error'));
+  };
 
   // Socket.IO connection — aligned with backend events
   useEffect(() => {
@@ -225,6 +271,8 @@ export default function ControlPanel({ onLogout }) {
         </div>
         <nav className="sidebar-nav">
           <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>Dashboard</div>
+          <div className={`nav-item ${activeTab === 'config' ? 'active' : ''}`} onClick={() => setActiveTab('config')}>Bot Config</div>
+          <div className={`nav-item ${activeTab === 'enotes' ? 'active' : ''}`} onClick={() => setActiveTab('enotes')}>eNotes</div>
           <div className={`nav-item ${activeTab === 'logs' ? 'active' : ''}`} onClick={() => setActiveTab('logs')}>Activity Logs</div>
           <div className={`nav-item ${activeTab === 'extension' ? 'active' : ''}`} onClick={() => setActiveTab('extension')}>Extension Guide</div>
         </nav>
@@ -393,6 +441,109 @@ export default function ControlPanel({ onLogout }) {
                     <p>Toggle the bot ON in the extension popup. Navigate to your Edgenuity class and Silent Study will handle everything automatically!</p>
                   </div>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'config' && (
+            <div className="cp-card">
+              <div className="cp-card-title">Bot Configuration</div>
+              {botActive && (
+                <div className="warning-banner">
+                  ⚠️ Cannot update config while bot is active. Stop the bot from the extension first.
+                </div>
+              )}
+              <div className="config-grid">
+                <label className="config-item">
+                  <input type="checkbox" checked={config.autoAdvance} disabled={botActive} onChange={e => setConfig({...config, autoAdvance: e.target.checked})} />
+                  <span>Auto Advance (Next Activity)</span>
+                </label>
+                <label className="config-item">
+                  <input type="checkbox" checked={config.autoSubmit} disabled={botActive} onChange={e => setConfig({...config, autoSubmit: e.target.checked})} />
+                  <span>Auto Submit Answers</span>
+                </label>
+                <label className="config-item">
+                  <input type="checkbox" checked={config.autoAssessment} disabled={botActive} onChange={e => setConfig({...config, autoAssessment: e.target.checked})} />
+                  <span>Auto Assessment / Quiz</span>
+                </label>
+                <label className="config-item">
+                  <input type="checkbox" checked={config.autoAssignment} disabled={botActive} onChange={e => setConfig({...config, autoAssignment: e.target.checked})} />
+                  <span>Auto Assignment</span>
+                </label>
+                <label className="config-item">
+                  <input type="checkbox" checked={config.autoWrite} disabled={botActive} onChange={e => setConfig({...config, autoWrite: e.target.checked})} />
+                  <span>Auto Written Responses</span>
+                </label>
+                <label className="config-item">
+                  <input type="checkbox" checked={config.autoProject} disabled={botActive} onChange={e => setConfig({...config, autoProject: e.target.checked})} />
+                  <span>Auto Project</span>
+                </label>
+                <label className="config-item">
+                  <input type="checkbox" checked={config.autoVocab} disabled={botActive} onChange={e => setConfig({...config, autoVocab: e.target.checked})} />
+                  <span>Auto Vocabulary</span>
+                </label>
+              </div>
+              
+              <div className="config-slider">
+                <label>Assessment Target Accuracy: <strong>{config.assessmentAccuracy}%</strong></label>
+                <input 
+                  type="range" 
+                  min="40" 
+                  max="90" 
+                  value={config.assessmentAccuracy} 
+                  disabled={botActive}
+                  onChange={e => setConfig({...config, assessmentAccuracy: parseInt(e.target.value)})} 
+                />
+                <div className="slider-labels">
+                  <span>40%</span>
+                  <span>90%</span>
+                </div>
+              </div>
+
+              <button 
+                className="save-btn" 
+                onClick={handleSaveConfig}
+                disabled={botActive}
+                style={{marginTop: '20px', padding: '10px 20px', background: botActive ? '#ccc' : '#2563eb', color: 'white', border: 'none', borderRadius: '4px', cursor: botActive ? 'not-allowed' : 'pointer'}}
+              >
+                Save Configuration
+              </button>
+            </div>
+          )}
+
+          {activeTab === 'enotes' && (
+            <div className="cp-card">
+              <div className="cp-card-title">eNotes (Answered Questions)</div>
+              <div className="notes-list">
+                {notesData.notes.length === 0 ? (
+                  <p>No questions answered yet.</p>
+                ) : (
+                  notesData.notes.map(note => (
+                    <div key={note._id} className="note-card">
+                      <div className="note-header">
+                        <span className="note-type">{note.activityType}</span>
+                        <span className="note-time">{formatTimestamp(note.timestamp)}</span>
+                      </div>
+                      <div className="note-q"><strong>Q:</strong> {note.questionText}</div>
+                      <div className="note-a"><strong>A:</strong> {note.answer}</div>
+                    </div>
+                  ))
+                )}
+              </div>
+              <div className="pagination">
+                <button 
+                  disabled={notesData.page <= 1} 
+                  onClick={() => loadNotes(notesData.page - 1)}
+                >
+                  Previous
+                </button>
+                <span>Page {notesData.page} of {notesData.pages}</span>
+                <button 
+                  disabled={notesData.page >= notesData.pages} 
+                  onClick={() => loadNotes(notesData.page + 1)}
+                >
+                  Next
+                </button>
               </div>
             </div>
           )}

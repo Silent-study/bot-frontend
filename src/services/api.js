@@ -168,6 +168,28 @@ export async function downloadExtension() {
   window.URL.revokeObjectURL(url);
 }
 
+export async function getConfig() {
+  const res = await authFetch('/api/config');
+  if (res.ok) return res.json();
+  throw new Error('Failed to load bot config');
+}
+
+export async function saveConfig(config) {
+  const res = await authFetch('/api/config', {
+    method: 'POST',
+    body: JSON.stringify(config)
+  });
+  if (res.ok) return res.json();
+  const err = await res.json();
+  throw new Error(err.error || 'Failed to save bot config');
+}
+
+export async function getNotes(page = 1, limit = 20) {
+  const res = await authFetch(`/api/notes?page=${page}&limit=${limit}`);
+  if (res.ok) return res.json();
+  throw new Error('Failed to load notes');
+}
+
 // ─── Socket.IO Helper ──────────────────────────────────────────────────────
 
 export function getSocketUrl() {
