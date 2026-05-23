@@ -188,7 +188,7 @@ export default function LandingPage({ isLoggedIn }) {
     <div className="app-container">
       <nav className="navbar">
         <div className="logo">
-          <div className="bot-logo" style={{width:'24px', height:'24px', fontSize:'14px', borderRadius: '50%', background: '#3b82f6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', marginRight: '8px'}}>S</div>
+          <img src="/favicon.svg" alt="SilentStudy Logo" style={{width: '24px', height: '24px', marginRight: '8px'}} />
           SilentStudy
         </div>
         <div className="nav-links">
@@ -777,7 +777,7 @@ export default function LandingPage({ isLoggedIn }) {
         </div>
         <div className="footer-bottom">
           <div className="footer-brand" style={{display: 'flex', alignItems: 'center'}}>
-            <div className="bot-logo" style={{width:'24px', height:'24px', fontSize:'14px', borderRadius: '50%', background: '#3b82f6', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', marginRight: '8px'}}>S</div>
+            <img src="/favicon.svg" alt="SilentStudy Logo" style={{width: '24px', height: '24px', marginRight: '8px'}} />
             <span style={{fontWeight: 800}}>SilentStudy</span>
             <span className="v-badge">v1.2.0</span>
           </div>
