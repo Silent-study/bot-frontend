@@ -79,6 +79,16 @@ export default function ControlPanel({ onLogout, activeTab = 'dashboard' }) {
     pages: 1,
   });
 
+  const [now, setNow] = useState(new Date());
+
+  // Tick timer for live countdown
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   // Load user info & stats on mount
   useEffect(() => {
     // Set initial data from localStorage (instant, no network)
@@ -232,17 +242,27 @@ export default function ControlPanel({ onLogout, activeTab = 'dashboard' }) {
     navigate('/');
   };
 
-  // Format expiry date
+  // Format expiry date as a live countdown
   const formatExpiry = (dateStr) => {
     if (!dateStr) return 'N/A';
     const expiry = new Date(dateStr);
-    const now = new Date();
     const diff = expiry - now;
     if (diff <= 0) return 'Expired';
+    
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    if (days > 0) return `${days}d ${hours}h remaining`;
-    return `${hours}h remaining`;
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    const pad = (num) => String(num).padStart(2, '0');
+
+    if (days > 0) {
+      return `${days}d ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s remaining`;
+    }
+    if (hours > 0) {
+      return `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s remaining`;
+    }
+    return `${pad(minutes)}m ${pad(seconds)}s remaining`;
   };
 
   const formatPlan = (plan) => {
@@ -328,7 +348,7 @@ export default function ControlPanel({ onLogout, activeTab = 'dashboard' }) {
                   </div>
                   <div className="stat-box">
                     <div className="stat-label">Expires In</div>
-                    <div className="stat-value">{formatExpiry(userInfo.expiryDate)}</div>
+                    <div className="stat-value" style={{ fontVariantNumeric: 'tabular-nums', fontFamily: 'monospace', letterSpacing: '0.5px' }}>{formatExpiry(userInfo.expiryDate)}</div>
                   </div>
                   {userInfo.licenseKey && (
                     <div className="stat-box">
