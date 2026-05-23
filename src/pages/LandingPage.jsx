@@ -70,13 +70,13 @@ export default function LandingPage({ isLoggedIn }) {
   ];
 
   const carouselFeatures = [
-    { title: "Auto Assessment", desc: "Answers every quiz, test, and exam with a perfect score using saved answers, with advanced AI as a fallback. Works on multiple-choice, true/false, fill-in-the-blank, and more.", emoji: "🧠" },
-    { title: "Undetected Operation", desc: "Silent Study operates like a real browser extension and is completely undetected by Edgenuity's bot-checking algorithms. Use customizable delays to stay under the radar.", emoji: "🛡️" },
-    { title: "Video Skipper", desc: "Automatically skips required videos on EX classes so you never sit through another lecture. Skip what you don't need and move on instantly.", emoji: "⏭️" },
-    { title: "Auto Write (AI)", desc: "Writes undetectable AI-generated answers for free response questions. Passes plagiarism checks every time.", emoji: "✍️" },
-    { title: "Proctorio Bypass", desc: "Lets Silent Study run on Proctorio-monitored assessments. Removes fullscreen lock and clipboard block so Silent Study can work normally during proctored exams.", emoji: "🔓" },
-    { title: "Discord Logging", desc: "Stay updated with real-time activity logs sent directly to your Discord server. Track everything Silent Study does across all your tabs.", emoji: "💬" },
-    { title: "Prevent Logout", desc: "Prevents being logged out due to AFK. Run Silent Study overnight and wake up to completed classes without lifting a finger.", emoji: "🔒" }
+    { title: "Auto Assessment", desc: "Answers every quiz, test, and exam with a perfect score using saved answers, with advanced AI as a fallback. Works on multiple-choice, true/false, fill-in-the-blank, and more.", icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#facc15" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="M9 12l2 2 4-4"></path></svg> },
+    { title: "Undetected Operation", desc: "Silent Study operates like a real browser extension and is completely undetected by Edgenuity's bot-checking algorithms. Use customizable delays to stay under the radar.", icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> },
+    { title: "Video Skipper", desc: "Automatically skips required videos on EX classes so you never sit through another lecture. Skip what you don't need and move on instantly.", icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 19 22 12 13 5 13 19"></polygon><polygon points="2 19 11 12 2 5 2 19"></polygon></svg> },
+    { title: "Auto Write (AI)", desc: "Writes undetectable AI-generated answers for free response questions. Passes plagiarism checks every time.", icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#c084fc" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg> },
+    { title: "Proctorio Bypass", desc: "Lets Silent Study run on Proctorio-monitored assessments. Removes fullscreen lock and clipboard block so Silent Study can work normally during proctored exams.", icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#f472b6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg> },
+    { title: "Discord Logging", desc: "Stay updated with real-time activity logs sent directly to your Discord server. Track everything Silent Study does across all your tabs.", icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> },
+    { title: "Prevent Logout", desc: "Prevents being logged out due to AFK. Run Silent Study overnight and wake up to completed classes without lifting a finger.", icon: <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fb923c" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg> }
   ];
 
   const features = [
@@ -288,7 +288,7 @@ export default function LandingPage({ isLoggedIn }) {
               {carouselFeatures.map((f, i) => (
                 <div key={i} className="c-card">
                   <div className="c-card-top">
-                    <span className="c-emoji">{f.emoji}</span>
+                    <span className="c-icon" style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{f.icon}</span>
                   </div>
                   <div className="c-card-bottom">
                     <h3 className="c-title">{f.title}</h3>
