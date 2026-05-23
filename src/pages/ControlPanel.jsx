@@ -257,12 +257,12 @@ export default function ControlPanel({ onLogout, activeTab = 'dashboard' }) {
     const pad = (num) => String(num).padStart(2, '0');
 
     if (days > 0) {
-      return `${days}d ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s remaining`;
+      return `${days}d ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
     }
     if (hours > 0) {
-      return `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s remaining`;
+      return `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
     }
-    return `${pad(minutes)}m ${pad(seconds)}s remaining`;
+    return `${pad(minutes)}m ${pad(seconds)}s`;
   };
 
   const formatPlan = (plan) => {
