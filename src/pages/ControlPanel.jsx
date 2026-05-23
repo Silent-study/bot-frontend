@@ -541,12 +541,23 @@ export default function ControlPanel({ onLogout, activeTab = 'dashboard' }) {
                   <h2>eNotes</h2>
                   <div className="notes-meta">
                     <span className="muted">{notesData.total || 0} total</span>
-                    <button className="btn-ghost-sm" onClick={() => loadNotes(notesData.page)}>Refresh</button>
+                    <button className="btn-ghost-sm" onClick={() => loadNotes(notesData.page)}>
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                      </svg>
+                      Refresh
+                    </button>
                   </div>
                 </div>
                 <div className="notes-container">
                   {notesData.notes.length === 0 ? (
-                    <div className="notes-empty muted">No notes yet — answered questions will appear here.</div>
+                    <div className="notes-empty">
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                      </svg>
+                      <span>No notes yet — answered questions will appear here.</span>
+                    </div>
                   ) : (
                     notesData.notes.map(note => (
                       <div key={note._id} className="note-card">
