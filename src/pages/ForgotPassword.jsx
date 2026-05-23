@@ -49,8 +49,8 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="control-panel-container" style={{justifyContent: 'center', minHeight: '100vh', background: '#070708'}}>
-      <div className="cp-card" style={{maxWidth: '450px', width: '100%', background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.05)'}}>
+    <div className="control-panel-container" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#070708', padding: '2rem'}}>
+      <div className="cp-card" style={{maxWidth: '450px', width: '100%', background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.05)', margin: '0 auto'}}>
         <div className="cp-card-title" style={{justifyContent: 'center', fontSize: '1.5rem', marginBottom: '0.5rem'}}>
           Reset Password
         </div>
@@ -83,10 +83,11 @@ export default function ForgotPassword() {
             </button>
           </form>
         )}
+      </div>
 
-        <div style={{marginTop: '1.5rem', textAlign: 'center'}}>
-          <span style={{color: '#404040', fontSize: '0.85rem', cursor: 'pointer'}} onClick={() => navigate('/')}>← Back to Home</span>
-        </div>
+      <div style={{marginTop: '2rem', color: '#404040', fontSize: '0.85rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem'}} onClick={() => navigate('/')}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Home
       </div>
     </div>
   );
