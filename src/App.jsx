@@ -33,8 +33,20 @@ export default function App() {
           element={authed ? <ControlPanel activeTab="dashboard" onLogout={handleLogout} /> : <Navigate to="/" />} 
         />
         <Route 
+          path="/config" 
+          element={authed ? <ControlPanel activeTab="config" onLogout={handleLogout} /> : <Navigate to="/" />} 
+        />
+        <Route 
+          path="/enotes" 
+          element={authed ? <ControlPanel activeTab="enotes" onLogout={handleLogout} /> : <Navigate to="/" />} 
+        />
+        <Route 
+          path="/setup" 
+          element={authed ? <ControlPanel activeTab="setup" onLogout={handleLogout} /> : <Navigate to="/" />} 
+        />
+        <Route 
           path="/extension" 
-          element={authed ? <ControlPanel activeTab="extension" onLogout={handleLogout} /> : <Navigate to="/" />} 
+          element={<Navigate to="/setup" replace />} 
         />
       </Routes>
     </Router>
