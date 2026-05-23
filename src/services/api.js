@@ -66,6 +66,7 @@ async function authFetch(path, options = {}) {
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
+  if (!path.startsWith('/api')) path = '/api' + path;
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers,
@@ -74,6 +75,7 @@ async function authFetch(path, options = {}) {
 }
 
 async function publicFetch(path, options = {}) {
+  if (!path.startsWith('/api')) path = '/api' + path;
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
     headers: {
