@@ -2,7 +2,7 @@
 // Central service for all backend API calls. Uses environment variable for base URL.
 // Manages JWT token storage and provides authenticated fetch wrappers.
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3000' : '');
 
 // ─── Token Management ──────────────────────────────────────────────────────
 

@@ -1898,4 +1898,36 @@
   .s-box h3 {
     font-size: 1.4rem;
   }
+  .navbar {
+    padding: 1rem 1rem;
+  }
+  .logo {
+    font-size: 1.1rem;
+  }
+  .logo svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 4px !important;
+  }
+  .nav-links {
+    gap: 0.5rem;
+  }
+  button.nav-link {
+    font-size: 0.85rem;
+    padding: 0;
+  }
+  .nav-btn-primary {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
 }
+
+@media (max-width: 360px) {
+  .logo span {
+    display: none; /* Optionally hide text if too small */
+  }
+  .nav-btn-primary {
+    padding: 0.3rem 0.6rem;
+  }
+}
+
