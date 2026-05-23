@@ -30,12 +30,12 @@ function eventToType(event) {
   return 'info';
 }
 
-export default function ControlPanel({ onLogout }) {
+export default function ControlPanel({ onLogout, activeTab = 'dashboard' }) {
   const navigate = useNavigate();
   const [socket, setSocket] = useState(null);
   const [socketStatus, setSocketStatus] = useState('connecting'); // connecting, connected, error
   const [logs, setLogs] = useState([]);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [dashboardTab, setDashboardTab] = useState('activity');
   const [toast, setToast] = useState(null);
   const logsRef = useRef(null);
 
@@ -270,11 +270,8 @@ export default function ControlPanel({ onLogout }) {
           Silent<span>Study</span>
         </div>
         <nav className="sidebar-nav">
-          <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>Dashboard</div>
-          <div className={`nav-item ${activeTab === 'config' ? 'active' : ''}`} onClick={() => setActiveTab('config')}>Bot Config</div>
-          <div className={`nav-item ${activeTab === 'enotes' ? 'active' : ''}`} onClick={() => setActiveTab('enotes')}>eNotes</div>
-          <div className={`nav-item ${activeTab === 'logs' ? 'active' : ''}`} onClick={() => setActiveTab('logs')}>Activity Logs</div>
-          <div className={`nav-item ${activeTab === 'extension' ? 'active' : ''}`} onClick={() => setActiveTab('extension')}>Extension Guide</div>
+          <div className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => navigate('/dashboard')}>Dashboard</div>
+          <div className={`nav-item ${activeTab === 'extension' ? 'active' : ''}`} onClick={() => navigate('/extension')}>Extension Guide</div>
         </nav>
         <div className="sidebar-footer">
           <div style={{fontSize: '0.75rem', color: '#525252', marginBottom: '0.75rem', textAlign: 'center'}}>
@@ -349,34 +346,222 @@ export default function ControlPanel({ onLogout }) {
                   <div className="stat-card-label">Total Activities</div>
                 </div>
               </div>
-            </>
-          )}
 
-          {activeTab === 'logs' && (
-            <div className="cp-grid">
-              {/* Live Activity Log */}
-              <div className="cp-card" style={{gridColumn: '1 / -1'}}>
-                <div className="cp-card-title">
-                  Live Activity Log
-                  <div className={`status-badge ${socketStatus === 'connected' ? 'RUNNING' : ''}`}>
-                    {socketStatus === 'connected' ? 'LIVE' : 'OFFLINE'}
-                  </div>
-                </div>
-                <div className="logs-window" ref={logsRef}>
-                  {logs.length === 0 && (
-                    <div className="log-entry info">
-                      Waiting for activity from Chrome Extension... Install the extension and enable the bot to see live logs here.
-                    </div>
-                  )}
-                  {logs.map((log, i) => (
-                    <div key={i} className={`log-entry ${log.type}`}>
-                      <span className="log-time">{formatTimestamp(log.timestamp)}</span>
-                      {log.msg}
-                    </div>
-                  ))}
-                </div>
+              {/* Inner Tabs for Dashboard */}
+              <div className="tab-nav">
+                <button className={`tab-btn ${dashboardTab === 'activity' ? 'active' : ''}`} onClick={() => setDashboardTab('activity')}>Live Activity</button>
+                <button className={`tab-btn ${dashboardTab === 'config' ? 'active' : ''}`} onClick={() => setDashboardTab('config')}>Bot Config</button>
+                <button className={`tab-btn ${dashboardTab === 'enotes' ? 'active' : ''}`} onClick={() => setDashboardTab('enotes')}>eNotes</button>
               </div>
-            </div>
+
+              {dashboardTab === 'activity' && (
+                <div className="tab-panel">
+                  <section className="status-card">
+                    <div className="status-header">
+                      <h2>Live Activity Log</h2>
+                      <div className={`badge ${socketStatus === 'connected' ? 'active' : 'inactive'}`}>
+                        {socketStatus === 'connected' ? 'LIVE' : 'OFFLINE'}
+                      </div>
+                    </div>
+                    <div className="logs-window" ref={logsRef}>
+                      {logs.length === 0 && (
+                        <div className="log-entry system">
+                          Waiting for activity from Chrome Extension... Install the extension and enable the bot to see live logs here.
+                        </div>
+                      )}
+                      {logs.map((log, i) => (
+                        <div key={i} className={`log-entry ${log.type}`}>
+                          <span className="log-time">[{formatTimestamp(log.timestamp)}]</span>
+                          <span>{log.msg}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                </div>
+              )}
+
+              {dashboardTab === 'config' && (
+                <div className="tab-panel">
+                  <section className="status-card config-tab-card">
+                    <div className="status-header">
+                      <h2>Bot Configuration</h2>
+                      <div className={`badge ${botActive ? 'active' : 'inactive'}`}>
+                        {botActive ? 'BOT ACTIVE' : 'BOT INACTIVE'}
+                      </div>
+                    </div>
+                    
+                    {botActive && (
+                      <p className="config-locked-msg">
+                        ⚠️ Bot is currently active. Stop the bot from the extension to edit settings.
+                      </p>
+                    )}
+                    
+                    <div className={botActive ? 'config-form-disabled' : ''}>
+                      <div className="config-item">
+                        <div className="config-item-info">
+                          <span className="config-label">Auto Advance</span>
+                          <span className="config-desc">Automatically clicks through lessons and moves forward without user input.</span>
+                        </div>
+                        <label className="switch">
+                          <input type="checkbox" checked={config.autoAdvance} disabled={botActive} onChange={e => setConfig({...config, autoAdvance: e.target.checked})} />
+                          <span className="slider"></span>
+                        </label>
+                      </div>
+
+                      <div className="config-item">
+                        <div className="config-item-info">
+                          <span className="config-label">Auto Submit</span>
+                          <span className="config-desc">Automatically hits the submit button on quizzes and assignments with a humanised delay.</span>
+                        </div>
+                        <label className="switch">
+                          <input type="checkbox" checked={config.autoSubmit} disabled={botActive} onChange={e => setConfig({...config, autoSubmit: e.target.checked})} />
+                          <span className="slider"></span>
+                        </label>
+                      </div>
+
+                      <div className="config-item">
+                        <div className="config-item-info">
+                          <span className="config-label">Auto Assessment</span>
+                          <span className="config-desc">Automatically selects answers on quizzes and tests — the core answer-bot feature.</span>
+                        </div>
+                        <label className="switch">
+                          <input type="checkbox" checked={config.autoAssessment} disabled={botActive} onChange={e => setConfig({...config, autoAssessment: e.target.checked})} />
+                          <span className="slider"></span>
+                        </label>
+                      </div>
+
+                      <div className="config-item config-item-slider">
+                        <div className="config-item-info">
+                          <span className="config-label">Assessment Accuracy — <span>{config.assessmentAccuracy}</span>%</span>
+                          <span className="config-desc">Percentage of correct answers the bot targets (40 – 90%). Lower values look more natural.</span>
+                        </div>
+                        <div className="slider-track-wrap">
+                          <span className="slider-min">40%</span>
+                          <input 
+                            type="range" 
+                            min="40" 
+                            max="90" 
+                            value={config.assessmentAccuracy} 
+                            disabled={botActive}
+                            onChange={e => setConfig({...config, assessmentAccuracy: parseInt(e.target.value)})} 
+                            className="range-slider"
+                          />
+                          <span className="slider-max">90%</span>
+                        </div>
+                      </div>
+
+                      <div className="config-item">
+                        <div className="config-item-info">
+                          <span className="config-label">Auto Assignment</span>
+                          <span className="config-desc">Handles written and structured assignments like vocab activities, labs, and drag-and-drop tasks.</span>
+                        </div>
+                        <label className="switch">
+                          <input type="checkbox" checked={config.autoAssignment} disabled={botActive} onChange={e => setConfig({...config, autoAssignment: e.target.checked})} />
+                          <span className="slider"></span>
+                        </label>
+                      </div>
+
+                      <div className="config-item">
+                        <div className="config-item-info">
+                          <span className="config-label">Auto Write</span>
+                          <span className="config-desc">Uses AI to generate and submit free-response answers and essays with a built-in humaniser.</span>
+                        </div>
+                        <label className="switch">
+                          <input type="checkbox" checked={config.autoWrite} disabled={botActive} onChange={e => setConfig({...config, autoWrite: e.target.checked})} />
+                          <span className="slider"></span>
+                        </label>
+                      </div>
+
+                      <div className="config-item">
+                        <div className="config-item-info">
+                          <span className="config-label">Auto Project</span>
+                          <span className="config-desc">Handles larger project-based tasks assigned by Edgenuity automatically.</span>
+                        </div>
+                        <label className="switch">
+                          <input type="checkbox" checked={config.autoProject} disabled={botActive} onChange={e => setConfig({...config, autoProject: e.target.checked})} />
+                          <span className="slider"></span>
+                        </label>
+                      </div>
+
+                      <div className="config-item">
+                        <div className="config-item-info">
+                          <span className="config-label">Auto Vocab / Instructions</span>
+                          <span className="config-desc">Automatically handles vocabulary activities and instruction slides including lesson intro pages.</span>
+                        </div>
+                        <label className="switch">
+                          <input type="checkbox" checked={config.autoVocab} disabled={botActive} onChange={e => setConfig({...config, autoVocab: e.target.checked})} />
+                          <span className="slider"></span>
+                        </label>
+                      </div>
+
+                      <div className="config-actions">
+                        <button 
+                          className="btn-primary btn-save-config" 
+                          onClick={handleSaveConfig}
+                          disabled={botActive}
+                        >
+                          Save Configuration
+                        </button>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              )}
+
+              {dashboardTab === 'enotes' && (
+                <div className="tab-panel">
+                  <section className="status-card notes-card">
+                    <div className="status-header">
+                      <h2>eNotes</h2>
+                      <div className="notes-meta">
+                        <span className="muted">{notesData.total || 0} total</span>
+                        <button className="btn-ghost-sm" onClick={() => loadNotes(notesData.page)}>Refresh</button>
+                      </div>
+                    </div>
+                    <div className="notes-container">
+                      {notesData.notes.length === 0 ? (
+                        <div className="notes-empty muted">No notes yet — answered questions will appear here.</div>
+                      ) : (
+                        notesData.notes.map(note => (
+                          <div key={note._id} className="note-card">
+                            <div className="note-card-header">
+                              <span className="note-type-badge">{note.activityType || 'MCQ'}</span>
+                              <span className={`note-source-badge ${note.source || 'ai'}`}>
+                                {note.source === 'db' ? 'cached' : 'ai'}
+                              </span>
+                              <span className="note-timestamp">
+                                {new Date(note.timestamp).toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="note-question">{note.questionText}</div>
+                            <div className="note-answer">{note.answer}</div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                    {notesData.pages > 1 && (
+                      <div className="notes-pagination">
+                        <button 
+                          className="btn-ghost-sm"
+                          disabled={notesData.page <= 1} 
+                          onClick={() => loadNotes(notesData.page - 1)}
+                        >
+                          ← Prev
+                        </button>
+                        <span className="muted">Page {notesData.page} of {notesData.pages}</span>
+                        <button 
+                          className="btn-ghost-sm"
+                          disabled={notesData.page >= notesData.pages} 
+                          onClick={() => loadNotes(notesData.page + 1)}
+                        >
+                          Next →
+                        </button>
+                      </div>
+                    )}
+                  </section>
+                </div>
+              )}
+            </>
           )}
 
           {activeTab === 'extension' && (
@@ -444,111 +629,9 @@ export default function ControlPanel({ onLogout }) {
               </div>
             </div>
           )}
-
-          {activeTab === 'config' && (
-            <div className="cp-card">
-              <div className="cp-card-title">Bot Configuration</div>
-              {botActive && (
-                <div className="warning-banner">
-                  ⚠️ Cannot update config while bot is active. Stop the bot from the extension first.
-                </div>
-              )}
-              <div className="config-grid">
-                <label className="config-item">
-                  <input type="checkbox" checked={config.autoAdvance} disabled={botActive} onChange={e => setConfig({...config, autoAdvance: e.target.checked})} />
-                  <span>Auto Advance (Next Activity)</span>
-                </label>
-                <label className="config-item">
-                  <input type="checkbox" checked={config.autoSubmit} disabled={botActive} onChange={e => setConfig({...config, autoSubmit: e.target.checked})} />
-                  <span>Auto Submit Answers</span>
-                </label>
-                <label className="config-item">
-                  <input type="checkbox" checked={config.autoAssessment} disabled={botActive} onChange={e => setConfig({...config, autoAssessment: e.target.checked})} />
-                  <span>Auto Assessment / Quiz</span>
-                </label>
-                <label className="config-item">
-                  <input type="checkbox" checked={config.autoAssignment} disabled={botActive} onChange={e => setConfig({...config, autoAssignment: e.target.checked})} />
-                  <span>Auto Assignment</span>
-                </label>
-                <label className="config-item">
-                  <input type="checkbox" checked={config.autoWrite} disabled={botActive} onChange={e => setConfig({...config, autoWrite: e.target.checked})} />
-                  <span>Auto Written Responses</span>
-                </label>
-                <label className="config-item">
-                  <input type="checkbox" checked={config.autoProject} disabled={botActive} onChange={e => setConfig({...config, autoProject: e.target.checked})} />
-                  <span>Auto Project</span>
-                </label>
-                <label className="config-item">
-                  <input type="checkbox" checked={config.autoVocab} disabled={botActive} onChange={e => setConfig({...config, autoVocab: e.target.checked})} />
-                  <span>Auto Vocabulary</span>
-                </label>
-              </div>
-              
-              <div className="config-slider">
-                <label>Assessment Target Accuracy: <strong>{config.assessmentAccuracy}%</strong></label>
-                <input 
-                  type="range" 
-                  min="40" 
-                  max="90" 
-                  value={config.assessmentAccuracy} 
-                  disabled={botActive}
-                  onChange={e => setConfig({...config, assessmentAccuracy: parseInt(e.target.value)})} 
-                />
-                <div className="slider-labels">
-                  <span>40%</span>
-                  <span>90%</span>
-                </div>
-              </div>
-
-              <button 
-                className="save-btn" 
-                onClick={handleSaveConfig}
-                disabled={botActive}
-                style={{marginTop: '20px', padding: '10px 20px', background: botActive ? '#ccc' : '#2563eb', color: 'white', border: 'none', borderRadius: '4px', cursor: botActive ? 'not-allowed' : 'pointer'}}
-              >
-                Save Configuration
-              </button>
-            </div>
-          )}
-
-          {activeTab === 'enotes' && (
-            <div className="cp-card">
-              <div className="cp-card-title">eNotes (Answered Questions)</div>
-              <div className="notes-list">
-                {notesData.notes.length === 0 ? (
-                  <p>No questions answered yet.</p>
-                ) : (
-                  notesData.notes.map(note => (
-                    <div key={note._id} className="note-card">
-                      <div className="note-header">
-                        <span className="note-type">{note.activityType}</span>
-                        <span className="note-time">{formatTimestamp(note.timestamp)}</span>
-                      </div>
-                      <div className="note-q"><strong>Q:</strong> {note.questionText}</div>
-                      <div className="note-a"><strong>A:</strong> {note.answer}</div>
-                    </div>
-                  ))
-                )}
-              </div>
-              <div className="pagination">
-                <button 
-                  disabled={notesData.page <= 1} 
-                  onClick={() => loadNotes(notesData.page - 1)}
-                >
-                  Previous
-                </button>
-                <span>Page {notesData.page} of {notesData.pages}</span>
-                <button 
-                  disabled={notesData.page >= notesData.pages} 
-                  onClick={() => loadNotes(notesData.page + 1)}
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </main>
     </div>
   );
 }
+

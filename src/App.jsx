@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './index.css';
 import './App.css';
 import LandingPage from './pages/LandingPage';
@@ -10,11 +10,7 @@ import LoginPage from './pages/LoginPage';
 import { isAuthenticated as checkAuth, clearAuth } from './services/api';
 
 export default function App() {
-  const [authed, setAuthed] = useState(false);
-
-  useEffect(() => {
-    setAuthed(checkAuth());
-  }, []);
+  const [authed, setAuthed] = useState(() => checkAuth());
 
   const handleAuthSuccess = () => {
     setAuthed(true);
@@ -34,7 +30,11 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route 
           path="/dashboard" 
-          element={authed ? <ControlPanel onLogout={handleLogout} /> : <Navigate to="/" />} 
+          element={authed ? <ControlPanel activeTab="dashboard" onLogout={handleLogout} /> : <Navigate to="/" />} 
+        />
+        <Route 
+          path="/extension" 
+          element={authed ? <ControlPanel activeTab="extension" onLogout={handleLogout} /> : <Navigate to="/" />} 
         />
       </Routes>
     </Router>
