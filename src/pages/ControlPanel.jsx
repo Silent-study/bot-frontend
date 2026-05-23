@@ -262,7 +262,7 @@ export default function ControlPanel({ onLogout }) {
       )}
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <img src="/favicon.svg" alt="SilentStudy Logo" style={{width: '24px', height: '24px', marginRight: '8px'}} />
+          <div className="bot-logo" style={{marginRight: '8px'}}>s</div>
           Silent<span>Study</span>
         </div>
         <nav className="sidebar-nav">

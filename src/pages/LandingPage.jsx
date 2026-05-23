@@ -188,7 +188,7 @@ export default function LandingPage({ isLoggedIn }) {
     <div className="app-container">
       <nav className="navbar">
         <div className="logo">
-          <img src="/favicon.svg" alt="SilentStudy Logo" style={{width: '24px', height: '24px', marginRight: '8px'}} />
+          <div className="bot-logo" style={{marginRight: '8px'}}>s</div>
           SilentStudy
         </div>
         <div className="nav-links">
@@ -777,7 +777,7 @@ export default function LandingPage({ isLoggedIn }) {
         </div>
         <div className="footer-bottom">
           <div className="footer-brand" style={{display: 'flex', alignItems: 'center'}}>
-            <img src="/favicon.svg" alt="SilentStudy Logo" style={{width: '24px', height: '24px', marginRight: '8px'}} />
+            <div className="bot-logo" style={{marginRight: '8px'}}>s</div>
             <span style={{fontWeight: 800}}>SilentStudy</span>
             <span className="v-badge">v1.2.0</span>
           </div>
