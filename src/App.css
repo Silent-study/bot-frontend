@@ -162,6 +162,7 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
+  padding: 0 1rem;
 }
 
 .features-carousel {
@@ -170,7 +171,7 @@
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   gap: 1.5rem;
-  padding: 1rem 0;
+  padding: 1rem 3rem;
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
@@ -202,11 +203,11 @@
 }
 
 .carousel-arrow.left {
-  left: -20px;
+  left: 10px;
 }
 
 .carousel-arrow.right {
-  right: -20px;
+  right: 10px;
 }
 
 .c-card {
