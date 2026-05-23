@@ -207,6 +207,11 @@ export default function ControlPanel({ onLogout, activeTab = 'dashboard' }) {
       });
     });
 
+    s.on('bot-status', ({ botActive }) => {
+      console.log('[Dashboard] Bot status changed in real-time:', botActive);
+      setBotActive(botActive);
+    });
+
     s.on('disconnect', () => {
       setSocketStatus('connecting');
     });
