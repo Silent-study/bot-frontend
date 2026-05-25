@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 
 export default function LandingPage({ isLoggedIn }) {
   const navigate = useNavigate();
@@ -1253,8 +1253,8 @@ export default function LandingPage({ isLoggedIn }) {
             <span className="v-badge">v1.2.0</span>
           </div>
           <div className="footer-legal">
-            <a href="#tos">Terms of Service</a>
-            <a href="#privacy">Privacy Policy</a>
+            <Link to="/terms">Terms of Service</Link>
+            <Link to="/privacy">Privacy Policy</Link>
             <span>Copyright © 2024-2026 Silent Study</span>
           </div>
         </div>
