@@ -44,11 +44,38 @@ export default function LandingPage({ isLoggedIn }) {
     }
   }, [searchParams, navigate]);
 
-  const calculatePrice = (basePrice) => {
-    let extra = 0;
-    if (selectedAddon === 'service' || selectedAddon === 'both') extra += 5;
-    if (selectedAddon === 'proctor' || selectedAddon === 'both') extra += 10;
-    return (basePrice + extra).toFixed(2);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const mockupRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (mockupRef.current) {
+        const rect = mockupRef.current.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const elementCenter = rect.top + rect.height / 2;
+        const viewportCenter = viewportHeight / 2;
+        const diff = elementCenter - viewportCenter;
+        let progress = diff / viewportCenter;
+        setScrollProgress(Math.max(0, Math.min(1, progress)));
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const getPlanPrice = (planId) => {
+    const pricingMatrix = {
+      base: { day: '2.50', week: '10.00', month: '20.00', six_month: '40.00' },
+      service: { day: '10.00', week: '35.00', month: '100.00', six_month: '250.00' },
+      proctor: { day: '5.00', week: '17.50', month: '30.00', six_month: '60.00' },
+      both: { day: '15.00', week: '42.50', month: '130.00', six_month: '310.00' }
+    };
+    return pricingMatrix[selectedAddon]?.[planId] || '0.00';
+  };
+
+  const getPlanUsers = () => {
+    return (selectedAddon === 'service' || selectedAddon === 'both') ? '5 users' : '1 user';
   };
 
   const scrollToPricing = (e) => {
@@ -75,28 +102,11 @@ export default function LandingPage({ isLoggedIn }) {
     navigate('/register', { state: { planId, addons } });
   };
 
-  const scrollCarousel = (dir) => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: dir * 340, behavior: 'smooth' });
-    }
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (carouselRef.current) {
-        // Auto scroll to right, reset if near end
-        if (carouselRef.current.scrollLeft + carouselRef.current.clientWidth >= carouselRef.current.scrollWidth - 10) {
-          carouselRef.current.scrollTo({ left: 0, behavior: 'smooth' });
-        } else {
-          carouselRef.current.scrollBy({ left: 340, behavior: 'smooth' });
-        }
-      }
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
   const testimonials = [
-    { initial: 'S', name: 'Student 129', handle: '@student129', text: 'bought silent study 6 months ago and now im graduating today months earlier, real life saver and best decision i made', color: '#3b82f6', pos: 'top-left' },
-    { initial: 'A', name: 'Alex M.', handle: '@alex_m', text: '11/10 best bot ive tried for edgeX dosnt get them all wrong and just turn off', color: '#10b981', pos: 'top-right' }
+    { initial: 'Z', name: 'Zayn', handle: '@zayneducation', text: 'bought SilentStudy a few months ago and got my grades up from Ds to straight As. Easiest Edgenuity bypass out there, literally a lifesaver!', color: '#3b82f6', pos: 'top-left' },
+    { initial: 'M', name: 'Maddy', handle: '@maddy_study', text: "W SilentStudy, spent like 15 bucks and finished 5 classes in a week. Highly recommend if you want to bypass proctorio and get all quizzes done.", color: '#a855f7', pos: 'bottom-left' },
+    { initial: 'R', name: 'Ryan', handle: '@ryan_r', text: "11/10 best extension I've tried for Edgenuity. Works perfectly with the new system, skips videos instantly, and answers actually get a 100% score.", color: '#10b981', pos: 'top-right' },
+    { initial: 'E', name: 'Elena', handle: '@elena_k', text: 'Best GPA booster ever, thank god SilentStudy has such active devs. The stealth mode is perfect for tests when you are sharing screens. 🔥', color: '#f97316', pos: 'bottom-right' }
   ];
 
   const carouselFeatures = [
@@ -249,6 +259,8 @@ export default function LandingPage({ isLoggedIn }) {
 
       <main>
         <section className="hero-section">
+          {/* Top Radial Glow */}
+          <div className="hero-top-glow"></div>
           {/* Floating Testimonials */}
           {testimonials.map((t, i) => (
             <div key={i} className={`testimonial-card floating-${t.pos}`}>
@@ -288,7 +300,7 @@ export default function LandingPage({ isLoggedIn }) {
                 {isLoggedIn ? 'Go to Dashboard' : 'Get Started'}
               </button>
             </div>
-            
+
             <div className="hero-stats">
               <div className="stat-item">
                 <span className="stars-yellow">★★★★★</span> Trusted by <strong>10,000+</strong> students
@@ -298,9 +310,74 @@ export default function LandingPage({ isLoggedIn }) {
                 <strong>2M+</strong> questions answered
               </div>
             </div>
+          </div>
+        </section>
 
+        {/* Interactive Extension Mockup Section (Separate Section) */}
+        <section className="hero-mockup-section">
+          <div className="hero-mockup-glow"></div>
+          <div className="mockup-content-wrapper">
             {/* Interactive Chrome Extension Mockup */}
-            <div className="ext-mock-wrapper">
+            <div className="ext-mock-wrapper" ref={mockupRef} style={{
+              perspective: '1500px',
+              transform: `rotateX(${scrollProgress * 20}deg) translateY(${scrollProgress * 30}px)`,
+              transition: 'transform 0.15s ease-out'
+            }}>
+              {/* Left Background Card: Logs Mockup */}
+              <div className="hero-bg-card left-bg-card">
+                <div className="logs-mockup">
+                  <div className="lm-header">
+                    <div className="lm-dots">
+                      <div className="lm-dot r"></div>
+                      <div className="lm-dot y"></div>
+                      <div className="lm-dot g"></div>
+                    </div>
+                    nexus logs
+                  </div>
+                  <div className="lm-body">
+                    <div className="lm-row">
+                      <div className="lm-meta">
+                        <span className="lm-author">Nexus Bot</span>
+                        <span className="lm-time">1:52 am</span>
+                      </div>
+                      <div className="lm-embed-row">
+                        <span className="lm-activity">Quiz - World History</span>
+                        <span className="lm-score green">100%</span>
+                      </div>
+                    </div>
+                    <div className="lm-row">
+                      <div className="lm-meta">
+                        <span className="lm-author">Nexus Bot</span>
+                        <span className="lm-time">1:50 am</span>
+                      </div>
+                      <div className="lm-embed-row">
+                        <span className="lm-activity">Video - Science Ch. 4</span>
+                        <span className="lm-score gray">Skipped</span>
+                      </div>
+                    </div>
+                    <div className="lm-row">
+                      <div className="lm-meta">
+                        <span className="lm-author">Nexus Bot</span>
+                        <span className="lm-time">1:48 am</span>
+                      </div>
+                      <div className="lm-embed-row">
+                        <span className="lm-activity">Free Response - English</span>
+                        <span className="lm-score blue">AI Written</span>
+                      </div>
+                    </div>
+                    <div className="lm-row">
+                      <div className="lm-meta">
+                        <span className="lm-author">Nexus Bot</span>
+                        <span className="lm-time">1:45 am</span>
+                      </div>
+                      <div className="lm-embed-row">
+                        <span className="lm-activity">Test - Algebra Unit 3</span>
+                        <span className="lm-score green">100%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div className={`ext-mock-card ${mTheme}`}>
                 
                 {/* Header */}
@@ -516,7 +593,99 @@ export default function LandingPage({ isLoggedIn }) {
                 </div>
 
               </div>
+
+              {/* Right Background Card: Assessment Mockup */}
+              <div className="hero-bg-card right-bg-card">
+                <div className="assessment-mockup">
+                  <div className="am-header">
+                    <div className="am-dots">
+                      <div className="am-dot r"></div>
+                      <div className="am-dot y"></div>
+                      <div className="am-dot g"></div>
+                    </div>
+                    Edgenuity - Auto Assessment
+                  </div>
+                  <div className="am-body">
+                    <div className="am-score-card">
+                      <div className="am-score-val">100%</div>
+                      <div className="am-score-label">Quiz Score - Auto Assessment</div>
+                      <div className="am-badges">
+                        <span className="am-badge green">✓ Submitted</span>
+                        <span className="am-badge blue">Undetected</span>
+                      </div>
+                    </div>
+                    <div className="am-questions" style={{ opacity: 0.85 }}>
+                      <div className="am-q-row">
+                        <div className="am-q-left">
+                          <div className="am-q-icon db">✓</div>
+                          Which of the following is a prime number?
+                        </div>
+                        <span className="am-tag db">DB</span>
+                      </div>
+                      <div className="am-q-row">
+                        <div className="am-q-left">
+                          <div className="am-q-icon db">✓</div>
+                          The American Civil War ended in...
+                        </div>
+                        <span className="am-tag db">DB</span>
+                      </div>
+                      <div className="am-q-row">
+                        <div className="am-q-left">
+                          <div className="am-q-icon db">✓</div>
+                          What is the chemical formula for water?
+                        </div>
+                        <span className="am-tag db">DB</span>
+                      </div>
+                      <div className="am-q-row">
+                        <div className="am-q-left">
+                          <div className="am-q-icon ai">✓</div>
+                          Describe the causes of WWI. (Free response)
+                        </div>
+                        <span className="am-tag ai">AI</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
+
+            {/* Horizontal Infinite Marquee Ticker */}
+            <div className="hero-marquee">
+              <div className="marquee-content">
+                <span>Auto Assessment</span><span className="marquee-dot">✦</span>
+                <span>Video Skipper</span><span className="marquee-dot">✦</span>
+                <span>Auto Write (AI)</span><span className="marquee-dot">✦</span>
+                <span>Proctorio Bypass</span><span className="marquee-dot">✦</span>
+                <span>Discord Logging</span><span className="marquee-dot">✦</span>
+                <span>Prevent Logout</span><span className="marquee-dot">✦</span>
+                <span>Auto Advance</span><span className="marquee-dot">✦</span>
+                <span>Auto Submit</span><span className="marquee-dot">✦</span>
+                <span>Duplicate Tabs</span><span className="marquee-dot">✦</span>
+                <span>Activity Skipping</span><span className="marquee-dot">✦</span>
+                <span>Advanced Class Support</span><span className="marquee-dot">✦</span>
+                <span>Auto Project</span><span className="marquee-dot">✦</span>
+                <span>Undetected</span><span className="marquee-dot">✦</span>
+                <span>AI-Powered</span><span className="marquee-dot">✦</span>
+                
+                {/* Duplicate for infinite loop scrolling */}
+                <span>Auto Assessment</span><span className="marquee-dot">✦</span>
+                <span>Video Skipper</span><span className="marquee-dot">✦</span>
+                <span>Auto Write (AI)</span><span className="marquee-dot">✦</span>
+                <span>Proctorio Bypass</span><span className="marquee-dot">✦</span>
+                <span>Discord Logging</span><span className="marquee-dot">✦</span>
+                <span>Prevent Logout</span><span className="marquee-dot">✦</span>
+                <span>Auto Advance</span><span className="marquee-dot">✦</span>
+                <span>Auto Submit</span><span className="marquee-dot">✦</span>
+                <span>Duplicate Tabs</span><span className="marquee-dot">✦</span>
+                <span>Activity Skipping</span><span className="marquee-dot">✦</span>
+                <span>Advanced Class Support</span><span className="marquee-dot">✦</span>
+                <span>Auto Project</span><span className="marquee-dot">✦</span>
+                <span>Undetected</span><span className="marquee-dot">✦</span>
+                <span>AI-Powered</span><span className="marquee-dot">✦</span>
+              </div>
+            </div>
+
           </div>
 
         </section>
@@ -529,13 +698,24 @@ export default function LandingPage({ isLoggedIn }) {
             </p>
           </div>
           
-          <div className="carousel-container">
-            <button className="carousel-arrow left" onClick={() => scrollCarousel(-1)}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6" /></svg>
-            </button>
-            <div className="features-carousel" ref={carouselRef}>
+          <div className="features-carousel-viewport">
+            <div className="features-carousel-track">
+              {/* First set of cards */}
               {carouselFeatures.map((f, i) => (
-                <div key={i} className="c-card">
+                <div key={`c1-${i}`} className="c-card">
+                  <div className="c-card-top">
+                    <span className="c-icon" style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{f.icon}</span>
+                  </div>
+                  <div className="c-card-bottom">
+                    <h3 className="c-title">{f.title}</h3>
+                    <p className="c-desc">{f.desc}</p>
+                  </div>
+                </div>
+              ))}
+              
+              {/* Second identical set for seamless infinite loop */}
+              {carouselFeatures.map((f, i) => (
+                <div key={`c2-${i}`} className="c-card">
                   <div className="c-card-top">
                     <span className="c-icon" style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{f.icon}</span>
                   </div>
@@ -546,9 +726,6 @@ export default function LandingPage({ isLoggedIn }) {
                 </div>
               ))}
             </div>
-            <button className="carousel-arrow right" onClick={() => scrollCarousel(1)}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6" /></svg>
-            </button>
           </div>
         </section>
 
@@ -916,36 +1093,73 @@ export default function LandingPage({ isLoggedIn }) {
             <span><strong>6,767 students</strong> purchased a key in the last 24 hours</span>
           </div>
 
-
+          <div className="pricing-tabs">
+            <button 
+              className={`p-tab ${selectedAddon === 'base' ? 'active' : ''}`}
+              onClick={() => setSelectedAddon('base')}
+            >
+              Base
+            </button>
+            <button 
+              className={`p-tab ${selectedAddon === 'service' ? 'active' : ''}`}
+              onClick={() => setSelectedAddon('service')}
+            >
+              + Service Key
+              <span className="tooltip-trigger">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{marginLeft: '4px'}}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span className="tooltip-content">Allows up to 5 users on the same key — share across accounts or with friends.</span>
+              </span>
+            </button>
+            <button 
+              className={`p-tab ${selectedAddon === 'proctor' ? 'active' : ''}`}
+              onClick={() => setSelectedAddon('proctor')}
+            >
+              + Proctor Bypass
+              <span className="tooltip-trigger">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{marginLeft: '4px'}}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span className="tooltip-content">Lets Silent Study run on Proctorio-monitored assessments. Removes fullscreen lock, clipboard block, and tab restrictions so Silent Study can operate normally.</span>
+              </span>
+            </button>
+            <button 
+              className={`p-tab ${selectedAddon === 'both' ? 'active' : ''}`}
+              onClick={() => setSelectedAddon('both')}
+            >
+              + Both Add-ons
+              <span className="tooltip-trigger">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{marginLeft: '4px'}}><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span className="tooltip-content">Includes both Service Key (5 users) and Proctorio Bypass add-ons at a bundled discount.</span>
+              </span>
+            </button>
+          </div>
 
           <div className="pricing-grid">
             <div className="p-card">
               <div className="p-label">Day Key</div>
-              <div className="p-price"><span>$</span>{calculatePrice(2.50)}</div>
-              <div className="p-duration">24 hours · 1 user</div>
-              <button className="p-btn" onClick={() => handleCheckout('day')}>Checkout →</button>
+              <div className="p-price"><span>$</span>{getPlanPrice('day')}</div>
+              <div className="p-duration">24 hours · {getPlanUsers()}</div>
+              <button className="p-btn" onClick={() => handleCheckout('day')}>Get Started →</button>
             </div>
 
             <div className="p-card popular">
               <div className="p-pop-badge">Most Popular</div>
               <div className="p-label">Week Key</div>
-              <div className="p-price"><span>$</span>{calculatePrice(10)}</div>
-              <div className="p-duration">1 week · 1 user</div>
-              <button className="p-btn primary" onClick={() => handleCheckout('week')}>Checkout →</button>
+              <div className="p-price"><span>$</span>{getPlanPrice('week')}</div>
+              <div className="p-duration">1 week · {getPlanUsers()}</div>
+              <button className="p-btn primary" onClick={() => handleCheckout('week')}>Get Started →</button>
             </div>
 
             <div className="p-card">
               <div className="p-label">Month Key</div>
-              <div className="p-price"><span>$</span>{calculatePrice(20)}</div>
-              <div className="p-duration">1 month · 1 user</div>
-              <button className="p-btn" onClick={() => handleCheckout('month')}>Checkout →</button>
+              <div className="p-price"><span>$</span>{getPlanPrice('month')}</div>
+              <div className="p-duration">1 month · {getPlanUsers()}</div>
+              <button className="p-btn" onClick={() => handleCheckout('month')}>Get Started →</button>
             </div>
 
             <div className="p-card">
               <div className="p-label">6 Months Key</div>
-              <div className="p-price"><span>$</span>{calculatePrice(40)}</div>
-              <div className="p-duration">6 months · 1 user</div>
-              <button className="p-btn" onClick={() => handleCheckout('six_month')}>Checkout →</button>
+              <div className="p-price"><span>$</span>{getPlanPrice('six_month')}</div>
+              <div className="p-duration">6 months · {getPlanUsers()}</div>
+              <button className="p-btn" onClick={() => handleCheckout('six_month')}>Get Started →</button>
             </div>
           </div>
 
