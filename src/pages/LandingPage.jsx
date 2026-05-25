@@ -6,6 +6,36 @@ export default function LandingPage({ isLoggedIn }) {
   const [searchParams] = useSearchParams();
   const carouselRef = useRef(null);
   const [selectedAddon, setSelectedAddon] = useState('base');
+  
+  // Interactive Chrome Extension Mockup States
+  const [mTab, setMTab] = useState('features');
+  const [mTheme, setMTheme] = useState('dark');
+  const [mAccuracy, setMAccuracy] = useState(85);
+  const [mToggles, setMToggles] = useState({
+    autoAdvance: true,
+    autoSubmit: true,
+    autoENotes: false,
+    autoInstruction: true,
+    autoAssignment: false,
+    autoAssessment: true,
+    autoWrite: true,
+    autoProject: false,
+    languageSkipper: true,
+    videoControls: false
+  });
+
+  const mockFeaturesList = [
+    { id: 'autoAdvance', label: 'Auto Advance', gear: true },
+    { id: 'autoSubmit', label: 'Auto Submit', gear: true },
+    { id: 'autoENotes', label: 'Auto eNotes', gear: false },
+    { id: 'autoInstruction', label: 'Auto Instruction/Vocab', gear: false },
+    { id: 'autoAssignment', label: 'Auto Assignment', gear: true },
+    { id: 'autoAssessment', label: 'Auto Assessment', gear: true },
+    { id: 'autoWrite', label: 'Auto Write', gear: true },
+    { id: 'autoProject', label: 'Auto Project', gear: true },
+    { id: 'languageSkipper', label: 'Language Activity Skipper', gear: true },
+    { id: 'videoControls', label: 'Video Controls', gear: true },
+  ];
 
   // Handle ?payment=success from Stripe redirect
   useEffect(() => {
@@ -266,6 +296,225 @@ export default function LandingPage({ isLoggedIn }) {
               <div className="stat-badge">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
                 <strong>2M+</strong> questions answered
+              </div>
+            </div>
+
+            {/* Interactive Chrome Extension Mockup */}
+            <div className="ext-mock-wrapper">
+              <div className={`ext-mock-card ${mTheme}`}>
+                
+                {/* Header */}
+                <div className="ext-mock-header">
+                  <div className="ext-mock-brand">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2L2 7l10 5 10-5-10-5Z"/>
+                      <path d="M2 17l10 5 10-5"/>
+                      <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                    <div className="ext-mock-title">Silent<span>Study</span></div>
+                  </div>
+
+                  <div className="ext-mock-tabs">
+                    <button 
+                      className={`ext-mock-tab-btn ${mTab === 'features' ? 'active' : ''}`}
+                      onClick={() => setMTab('features')}
+                    >
+                      Features
+                    </button>
+                    <button 
+                      className={`ext-mock-tab-btn ${mTab === 'settings' ? 'active' : ''}`}
+                      onClick={() => setMTab('settings')}
+                    >
+                      Settings
+                    </button>
+                    <button 
+                      className={`ext-mock-tab-btn ${mTab === 'about' ? 'active' : ''}`}
+                      onClick={() => setMTab('about')}
+                    >
+                      About
+                    </button>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="ext-mock-content">
+                  {mTab === 'features' && (
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      {mockFeaturesList.map(item => (
+                        <div key={item.id} className="ext-mock-row">
+                          <div className="ext-mock-row-left">
+                            <span className="ext-mock-row-label">{item.label}</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            {item.gear && (
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ cursor: 'pointer' }}>
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                              </svg>
+                            )}
+                            <label className="ext-mock-switch">
+                              <input 
+                                type="checkbox" 
+                                checked={mToggles[item.id]} 
+                                onChange={(e) => setMToggles({ ...mToggles, [item.id]: e.target.checked })}
+                              />
+                              <span className="ext-mock-slider"></span>
+                            </label>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {mTab === 'settings' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '5px 0' }}>
+                      <div className="ext-mock-settings-group">
+                        <div className="ext-mock-settings-label">Assessment Accuracy</div>
+                        <div className="ext-mock-slider-row">
+                          <input 
+                            type="range" 
+                            min="40" 
+                            max="100" 
+                            value={mAccuracy} 
+                            onChange={(e) => setMAccuracy(parseInt(e.target.value))} 
+                            className="ext-mock-settings-range"
+                          />
+                          <span className="ext-mock-settings-val">{mAccuracy}%</span>
+                        </div>
+                      </div>
+
+                      <div className="ext-mock-settings-group">
+                        <div className="ext-mock-settings-label">Target Grade</div>
+                        <div className="ext-mock-slider-row" style={{ justifyContent: 'space-between' }}>
+                          <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Target Letter Grade</span>
+                          <select 
+                            style={{
+                              background: mTheme === 'dark' ? '#0f172a' : '#ffffff',
+                              color: mTheme === 'dark' ? '#e2e8f0' : '#1e293b',
+                              border: '1px solid rgba(59, 130, 246, 0.2)',
+                              borderRadius: '6px',
+                              padding: '4px 8px',
+                              outline: 'none',
+                              fontFamily: 'Outfit',
+                              fontSize: '0.85rem',
+                              fontWeight: 600
+                            }}
+                            defaultValue="A"
+                          >
+                            <option value="A">A (90-100%)</option>
+                            <option value="B">B (80-89%)</option>
+                            <option value="C">C (70-79%)</option>
+                            <option value="D">D (60-69%)</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="ext-mock-settings-group">
+                        <div className="ext-mock-settings-label">Discord Logging</div>
+                        <div className="ext-mock-slider-row" style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: '8px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                            <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Enable Webhook</span>
+                            <label className="ext-mock-switch">
+                              <input type="checkbox" defaultChecked />
+                              <span className="ext-mock-slider"></span>
+                            </label>
+                          </div>
+                          <input 
+                            type="text" 
+                            readOnly 
+                            value="https://discord.com/api/webhooks/..." 
+                            style={{
+                              width: '100%',
+                              padding: '8px 12px',
+                              background: mTheme === 'dark' ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.05)',
+                              border: '1px solid rgba(255,255,255,0.05)',
+                              borderRadius: '6px',
+                              color: '#64748b',
+                              fontSize: '0.75rem',
+                              outline: 'none'
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {mTab === 'about' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      <div className="ext-mock-about-box">
+                        <div className="ext-mock-about-row">
+                          <span className="ext-mock-about-label">Extension Version</span>
+                          <span className="ext-mock-about-val">v2.1.0</span>
+                        </div>
+                        <div className="ext-mock-about-row">
+                          <span className="ext-mock-about-label">System Status</span>
+                          <span className="ext-mock-status-pill">Connected</span>
+                        </div>
+                        <div className="ext-mock-about-row">
+                          <span className="ext-mock-about-label">Auto Updates</span>
+                          <span className="ext-mock-about-val" style={{ color: '#10b981' }}>Active</span>
+                        </div>
+                        <div className="ext-mock-about-row">
+                          <span className="ext-mock-about-label">Engine Framework</span>
+                          <span className="ext-mock-about-val">EdgeEX & Nova V2</span>
+                        </div>
+                      </div>
+                      
+                      <div className="ext-mock-about-box" style={{ gap: '8px' }}>
+                        <h5 style={{ margin: 0, fontSize: '0.8rem', textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.5px' }}>Device Security</h5>
+                        <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b', lineHeight: 1.4 }}>
+                          This extension is legally bound to your device HWID. Do not attempt to run on unauthorized browsers.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer */}
+                <div className="ext-mock-footer">
+                  <button 
+                    className="ext-mock-footer-btn"
+                    onClick={() => setMTheme(mTheme === 'dark' ? 'light' : 'dark')}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      {mTheme === 'dark' ? (
+                        <>
+                          <circle cx="12" cy="12" r="5"></circle>
+                          <line x1="12" y1="1" x2="12" y2="3"></line>
+                          <line x1="12" y1="21" x2="12" y2="23"></line>
+                          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                          <line x1="1" y1="12" x2="3" y2="12"></line>
+                          <line x1="21" y1="12" x2="23" y2="12"></line>
+                          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </>
+                      ) : (
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                      )}
+                    </svg>
+                    {mTheme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                  </button>
+                  
+                  <a 
+                    href="#support" 
+                    className="ext-mock-footer-btn" 
+                    style={{ textDecoration: 'none' }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const support = document.getElementById('support');
+                      if (support) support.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="8" x2="12" y2="12"></line>
+                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Support
+                  </a>
+                </div>
+
               </div>
             </div>
           </div>
