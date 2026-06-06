@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { login as apiLogin, isAuthenticated } from '../services/api';
+import { trackPurchase } from '../services/pixels';
 import '../ControlPanel.css';
 
 export default function LoginPage({ onAuthSuccess }) {
@@ -23,6 +24,24 @@ export default function LoginPage({ onAuthSuccess }) {
   useEffect(() => {
     if (searchParams.get('payment') === 'success') {
       setPaymentSuccess(true);
+
+      // ─── Track Complete Purchase ───
+      const savedPlan = localStorage.getItem('ss_checkout_plan') || 'week';
+      const savedEmail = localStorage.getItem('ss_checkout_email') || '';
+      let savedAddons = [];
+      try {
+        savedAddons = JSON.parse(localStorage.getItem('ss_checkout_addons') || '[]');
+      } catch (e) {
+        console.error('Failed to parse saved addons:', e);
+      }
+
+      trackPurchase(savedPlan, savedAddons, savedEmail);
+
+      // Clean up localStorage keys
+      localStorage.removeItem('ss_checkout_plan');
+      localStorage.removeItem('ss_checkout_addons');
+      localStorage.removeItem('ss_checkout_email');
+
       setSearchParams({}, { replace: true });
     }
   }, [searchParams, setSearchParams]);

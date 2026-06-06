@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { sendOtp, register, createCheckout, isAuthenticated } from '../services/api';
+import { trackSignUp, trackStartCheckout } from '../services/pixels';
 import '../ControlPanel.css';
 
 export default function RegisterPage() {
@@ -62,10 +63,23 @@ export default function RegisterPage() {
       const userData = await regRes.json();
       if (!regRes.ok) throw new Error(userData.error || 'Registration failed');
 
+      // ─── Track Complete Sign Up ───
+      trackSignUp(formData.email);
+
       const stripeRes = await createCheckout({ planId, addons, userId: userData.userId });
 
       const session = await stripeRes.json();
-      if (session.url) window.location.href = session.url;
+      if (session.url) {
+        // Save plan/price info in localStorage to track Purchase on redirect
+        localStorage.setItem('ss_checkout_plan', planId);
+        localStorage.setItem('ss_checkout_addons', JSON.stringify(addons));
+        localStorage.setItem('ss_checkout_email', formData.email);
+
+        // ─── Track Initiate Checkout ───
+        trackStartCheckout(planId, addons, formData.email);
+
+        window.location.href = session.url;
+      }
     } catch (err) {
       alert(err.message);
     } finally {

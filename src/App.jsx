@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import './index.css';
 import './App.css';
 import LandingPage from './pages/LandingPage';
@@ -10,6 +10,17 @@ import LoginPage from './pages/LoginPage';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import { isAuthenticated as checkAuth, clearAuth } from './services/api';
+import { trackPageView } from './services/pixels';
+
+function PageTracker() {
+  const location = useLocation();
+
+  useEffect(() => {
+    trackPageView();
+  }, [location]);
+
+  return null;
+}
 
 export default function App() {
   const [authed, setAuthed] = useState(() => checkAuth());
@@ -25,6 +36,7 @@ export default function App() {
 
   return (
     <Router>
+      <PageTracker />
       <Routes>
         <Route path="/" element={<LandingPage isLoggedIn={authed} onAuthSuccess={handleAuthSuccess} />} />
         <Route path="/register" element={<RegisterPage onAuthSuccess={handleAuthSuccess} />} />
@@ -57,4 +69,5 @@ export default function App() {
     </Router>
   );
 }
+
 
